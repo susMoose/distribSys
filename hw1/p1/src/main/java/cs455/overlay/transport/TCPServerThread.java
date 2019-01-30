@@ -4,7 +4,7 @@ import java.net.*;
 
 public class TCPServerThread  {
 	Socket socket;
-	int portFinder;
+	public int portFinder;
 	
 	/* Constructor */
 	public TCPServerThread() throws IOException {
@@ -17,11 +17,12 @@ public class TCPServerThread  {
 	 * The socket connects to the first open port it finds.Once it completes one can assume a
 	 * successful connection was made. 
 	 */
-	public void findSocketandPort() throws IOException {
+	public int findSocketandPort() throws IOException {
 		while(true) {
 			try {	
 				String SERVER_ADDRESS = "frankfort.cs.colostate.edu";
-				socket = new Socket(SERVER_ADDRESS, portFinder); break;	//Remove hard coded hostname later
+				socket = new Socket(SERVER_ADDRESS, portFinder); 
+				return portFinder;	//Remove hard coded hostname later
 			} catch(IOException e) {
 				portFinder++; 	//System.out.println("Client::main::creating_the_socket:: " + e);
 			}

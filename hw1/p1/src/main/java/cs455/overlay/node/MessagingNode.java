@@ -17,7 +17,7 @@ public class MessagingNode extends Node{
 	
 	public static void main(String[] args) throws IOException {
 		Node mNode = new MessagingNode("(ip address here)",4);
-		System.out.println(mNode.portNum);
+		//System.out.println(mNode.portNum);
 	}
 
 }
