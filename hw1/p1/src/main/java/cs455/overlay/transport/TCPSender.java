@@ -8,12 +8,13 @@ public class TCPSender {
 	private DataOutputStream dout;
 
 	/* Constructor */
-	public TCPSender(Socket socket) throws IOException {
-		this.socket = socket;
+	public TCPSender() throws IOException {
+		TCPServerThread tcpSocket = new TCPServerThread();		//creates a socket with a port num
+		this.socket = tcpSocket.socket;	
 		dout = new DataOutputStream(socket.getOutputStream());
+
+		socket.close();
 	}
-	
-	
 	
 	
 	/* Sender */
@@ -22,6 +23,10 @@ public class TCPSender {
 		dout.writeInt(dataLength);
 		dout.write(dataToSend, 0, dataLength);
 		dout.flush();
+	}
+	
+	public static void main(String[] args) throws IOException {
+		TCPSender h = new TCPSender();
 	}
 
 	

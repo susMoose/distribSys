@@ -2,33 +2,43 @@ package cs455.overlay.transport;
 import java.io.*;
 import java.net.*;
 
-public class TCPServerThread {
+public class TCPServerThread  {
+	Socket socket;
+	int portFinder;
 	
-	public static void main(String[] args) throws IOException {
-		int portNumFinder = 1025; 
-		Socket socket;
-		boolean portFound = false; 
-		while(!portFound) {
-			try {
-				//We create the socket AND try to connect to the address and port we are running the server on
-				socket = new Socket("saint-paul.cs.colostate.edu", portNumFinder);
-				socket.close();
-				portFound = true;
+	/* Constructor */
+	public TCPServerThread() throws IOException {
+		portFinder = 1024; 
+		findSocketandPort(); 
+		//socket.close(); //move later
+	}	
+	
+	/* Creates a socket and tries to connect to a bunch of ports and finishes when it succeeds.
+	 * The socket connects to the first open port it finds.Once it completes one can assume a
+	 * successful connection was made. 
+	 */
+	public void findSocketandPort() throws IOException {
+		while(true) {
+			try {	
+				String SERVER_ADDRESS = "frankfort.cs.colostate.edu";
+				socket = new Socket(SERVER_ADDRESS, portFinder); break;	//Remove hard coded hostname later
 			} catch(IOException e) {
-				portNumFinder++; 	
-				System.out.println("Client::main::creating_the_socket:: " + e);
+				portFinder++; 	//System.out.println("Client::main::creating_the_socket:: " + e);
 			}
 		}
-		// once here we can assume that an open port was found 
-		
-		
-	}
+	}	
+	
+	
+//	public static void main(String[] args) throws IOException {
+//		TCPServerThread x = new TCPServerThread();
+//	}
 
 }
 
 
+
+
+// NOTES: 
 // the line below is used if a machine has multiple ip addresses 
 //ServerSocket serverSocket = new ServerSocket(5000, 100, InetAddress.getHostByName(“address2.cs.colostate.edu”));
-
-
 // TCPServerSocket is used to accept incoming TCP communications. 
