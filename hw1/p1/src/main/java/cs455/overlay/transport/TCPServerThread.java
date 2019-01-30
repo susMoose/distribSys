@@ -8,19 +8,18 @@ public class TCPServerThread {
 		int portNumFinder = 1025; 
 		Socket socket;
 		boolean portFound = false; 
-		
 		while(!portFound) {
 			try {
 				//We create the socket AND try to connect to the address and port we are running the server on
 				socket = new Socket("saint-paul.cs.colostate.edu", portNumFinder);
+				socket.close();
 				portFound = true;
 			} catch(IOException e) {
-				portNumFinder++; 	//next time check 
+				portNumFinder++; 	
 				System.out.println("Client::main::creating_the_socket:: " + e);
 			}
 		}
 		// once here we can assume that an open port was found 
-		
 		
 		
 	}
