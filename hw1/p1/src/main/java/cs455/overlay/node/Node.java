@@ -11,12 +11,10 @@ public class Node {
 		ipAddr = ipAddress;
 		portNum = portNumber;
 		
-		//may have to change later cause of assigned port num
-		// so for now i am just directly altering 
+		//may have to change later because of the assigned port numbers
 		try {
 			TCPServerThread gPort = new TCPServerThread();
-			portNum = gPort.portFinder;
-			System.out.println(portNum);
+			portNum = gPort.portFinder;		//assign port number
 		} catch (IOException e) {
 			e.printStackTrace();	//alter later
 		}

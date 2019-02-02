@@ -3,40 +3,38 @@ import java.io.*;
 import java.net.*;
 
 public class TCPServerThread  {
-	Socket socket;
-	public int portFinder;
-	
+	public ServerSocket myServerSocket;
+	public int portFinder = 1025;
+
 	/* Constructor */
 	public TCPServerThread() throws IOException {
-		portFinder = 1024; 
 		findSocketandPort(); 
-		//socket.close(); //move later
 	}	
 	
 	/* Creates a socket and tries to connect to a bunch of ports and finishes when it succeeds.
 	 * The socket connects to the first open port it finds.Once it completes one can assume a
 	 * successful connection was made. 
 	 */
-	public int findSocketandPort() throws IOException {
+	public void findSocketandPort() throws IOException {
 		while(true) {
 			try {	
-				String SERVER_ADDRESS = "frankfort.cs.colostate.edu";
-				socket = new Socket(SERVER_ADDRESS, portFinder); 
-				return portFinder;	//Remove hard coded hostname later
+				//String SERVER_ADDRESS = "harrisburg.cs.colostate.edu";
+				myServerSocket = new ServerSocket(portFinder); 
+				System.out.println("connected to new port: "+ portFinder);
+				break;	
 			} catch(IOException e) {
-				portFinder++; 	//System.out.println("Client::main::creating_the_socket:: " + e);
+				portFinder++; 
+				System.out.println("Client::main::creating_the_socket:: " + e);
 			}
 		}
 	}	
 	
-	
-//	public static void main(String[] args) throws IOException {
-//		TCPServerThread x = new TCPServerThread();
-//	}
+	public static void main(String[] args) throws IOException {
+		TCPServerThread x = new TCPServerThread();
+		TCPServerThread y = new TCPServerThread();
+	}
 
 }
-
-
 
 
 // NOTES: 

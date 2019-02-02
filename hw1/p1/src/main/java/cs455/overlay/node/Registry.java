@@ -1,5 +1,7 @@
 package cs455.overlay.node;
 
+import java.io.IOException;
+
 public class Registry extends Node{
 	
 	/* Constructor */
@@ -14,7 +16,9 @@ public class Registry extends Node{
 	public void listWeights() {}
 	
 	/* Sets up overlay by sending messaging nodes the contact info for other messaging nodes */
-	public void setupOverlay(int numberOfConnections) {}
+	public void setupOverlay(int numberOfConnections) {
+		
+	}
 	
 	/*Sends a link_weights message to all register nodes in the overlay.
 	 * This command should be called once after the setupOverlay command is finished. */
@@ -25,7 +29,12 @@ public class Registry extends Node{
 	
 	
 	
-	public static void main(String[] args) {
-
+	public static void main(String[] args) throws IOException {
+		Node rNode = new Registry("(ip address here)",4);
+		Node rNode2 = new Registry("(ip address here)",4);
+		
+		System.out.println(rNode.ipAddr);
+		System.out.println(rNode2.ipAddr);
+		
 	}
 }

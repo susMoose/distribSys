@@ -4,16 +4,16 @@ import java.io.*;
 import java.net.*;
 
 public class TCPSender {
-	private Socket socket;
+	private ServerSocket mySocket;
 	private DataOutputStream dout;
 
 	/* Constructor */
 	public TCPSender() throws IOException {
 		TCPServerThread tcpSocket = new TCPServerThread();		//creates a socket with a port num
-		this.socket = tcpSocket.socket;	
-		dout = new DataOutputStream(socket.getOutputStream());
-
-		socket.close();
+		this.mySocket = tcpSocket.myServerSocket;	
+		
+		
+		//dout = new DataOutputStream(mySocket.getOutputStream());
 	}
 	
 	
@@ -27,6 +27,8 @@ public class TCPSender {
 	
 	public static void main(String[] args) throws IOException {
 		TCPSender h = new TCPSender();
+		TCPSender g = new TCPSender();
+		
 	}
 
 	

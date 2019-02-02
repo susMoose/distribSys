@@ -2,7 +2,7 @@ package cs455.overlay.transport;
 import java.io.*;
 import java.net.*;
 
-public class TCPRecieverThread implements Runnable {
+public class TCPRecieverThread extends TCPServerThread implements Runnable {
 	private Socket socket;
 	private DataInputStream din;
 	
@@ -29,4 +29,7 @@ public class TCPRecieverThread implements Runnable {
 			}
 		}
 	}
+	
+	
+	
 }

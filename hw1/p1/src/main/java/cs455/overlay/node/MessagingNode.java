@@ -3,10 +3,12 @@ import java.io.IOException;
 
 
 public class MessagingNode extends Node{
-
+	
+	/* Constructor */
 	public MessagingNode(String ipAddress, int portNumber) {
 		super(ipAddress, portNumber);
 	}
+	
 	/* Prints the shortest paths to all other message nodes */
 	public void printShortestPath() {}
 	
