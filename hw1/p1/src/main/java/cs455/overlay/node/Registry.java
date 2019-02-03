@@ -2,11 +2,15 @@ package cs455.overlay.node;
 
 import java.io.IOException;
 
-public class Registry extends Node{
+
+public class Registry {
+	private int regPortNum;
+	private Node registryNode;
 	
 	/* Constructor */
-	public Registry(String ipAddress, int portNumber) {
-		super(ipAddress, portNumber);
+	public Registry(int rPortNumber) throws IOException {
+		regPortNum = rPortNumber;
+		registryNode = new Node(regPortNum);		//Creating registry Node 
 	}
 	
 	/* Lists host name + port numbers */
@@ -17,7 +21,6 @@ public class Registry extends Node{
 	
 	/* Sets up overlay by sending messaging nodes the contact info for other messaging nodes */
 	public void setupOverlay(int numberOfConnections) {
-		
 	}
 	
 	/*Sends a link_weights message to all register nodes in the overlay.
@@ -30,11 +33,7 @@ public class Registry extends Node{
 	
 	
 	public static void main(String[] args) throws IOException {
-		Node rNode = new Registry("(ip address here)",4);
-		Node rNode2 = new Registry("(ip address here)",4);
-		
-		System.out.println(rNode.ipAddr);
-		System.out.println(rNode2.ipAddr);
-		
+		int rPort = Integer.parseInt(args[0]);
+		Registry registry = new Registry(rPort);
 	}
 }

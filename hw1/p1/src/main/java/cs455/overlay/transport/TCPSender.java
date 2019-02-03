@@ -11,8 +11,6 @@ public class TCPSender {
 	public TCPSender() throws IOException {
 		TCPServerThread tcpSocket = new TCPServerThread();		//creates a socket with a port num
 		this.mySocket = tcpSocket.myServerSocket;	
-		
-		
 		//dout = new DataOutputStream(mySocket.getOutputStream());
 	}
 	

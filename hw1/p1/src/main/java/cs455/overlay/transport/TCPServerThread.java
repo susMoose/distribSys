@@ -6,19 +6,32 @@ public class TCPServerThread  {
 	public ServerSocket myServerSocket;
 	public int portFinder = 1025;
 
-	/* Constructor */
+	/* Constructor for when we are given a specific port number  */
+	public TCPServerThread(int portNumber) throws IOException {
+		openRegistryPort(portNumber); 
+	}
+	
+	/* Constructor for when we have to find an open port  */
 	public TCPServerThread() throws IOException {
-		findSocketandPort(); 
+		findOpenPort(); 
 	}	
 	
-	/* Creates a socket and tries to connect to a bunch of ports and finishes when it succeeds.
-	 * The socket connects to the first open port it finds.Once it completes one can assume a
-	 * successful connection was made. 
-	 */
-	public void findSocketandPort() throws IOException {
+	/* Opens a the port for the registry at a given port number */
+	public void openRegistryPort( int portNumber) throws IOException{			
+		try {	
+			myServerSocket = new ServerSocket(portNumber); 
+			System.out.println("Registry socket located at port: "+ portNumber);
+		} catch(IOException e) {
+			System.out.println("Unable to connect to provided port, "+portNumber+" because of  "+ e);
+			System.exit(1);
+		}
+	}
+	
+	/* Creates a socket and tries to connect to first open port. If no errors result then one can assume a
+	 * successful connection was made. */
+	private void findOpenPort() throws IOException {
 		while(true) {
 			try {	
-				//String SERVER_ADDRESS = "harrisburg.cs.colostate.edu";
 				myServerSocket = new ServerSocket(portFinder); 
 				System.out.println("connected to new port: "+ portFinder);
 				break;	
@@ -29,10 +42,12 @@ public class TCPServerThread  {
 		}
 	}	
 	
-	public static void main(String[] args) throws IOException {
-		TCPServerThread x = new TCPServerThread();
-		TCPServerThread y = new TCPServerThread();
-	}
+	
+	
+//	public static void main(String[] args) throws IOException {
+//		TCPServerThread x = new TCPServerThread();
+//		TCPServerThread y = new TCPServerThread();
+//	}
 
 }
 

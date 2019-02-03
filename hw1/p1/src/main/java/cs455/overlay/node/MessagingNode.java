@@ -1,12 +1,17 @@
 package cs455.overlay.node;
 import java.io.IOException;
 
+import cs455.overlay.wireformats.Register;
 
-public class MessagingNode extends Node{
-	
+
+public class MessagingNode{
+	Node messageNode; 
+
 	/* Constructor */
-	public MessagingNode(String ipAddress, int portNumber) {
-		super(ipAddress, portNumber);
+	public MessagingNode(String registryHost, int registryPort) {
+		 messageNode = new Node();
+		 Register registrationMessage = new Register(messageNode.ipAddr,messageNode.portNum, registryHost, registryPort);
+		 
 	}
 	
 	/* Prints the shortest paths to all other message nodes */
@@ -18,7 +23,7 @@ public class MessagingNode extends Node{
 	
 	
 	public static void main(String[] args) throws IOException {
-		Node mNode = new MessagingNode("(ip address here)",4);
+		//MessagingNode mnode = new MessagingNode("(ip address here)",4);
 		//System.out.println(mNode.portNum);
 	}
 
