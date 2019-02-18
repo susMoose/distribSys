@@ -3,31 +3,35 @@ package cs455.overlay.transport;
 import java.io.*;
 import java.net.*;
 
+import cs455.overlay.node.Node;
+import cs455.overlay.wireformats.Message;
+
+
 public class TCPSender {
-	private ServerSocket mySocket;
-	private DataOutputStream dout;
-
-	/* Constructor */
-	public TCPSender() throws IOException {
-		TCPServerThread tcpSocket = new TCPServerThread();		//creates a socket with a port num
-		this.mySocket = tcpSocket.myServerSocket;	
-		//dout = new DataOutputStream(mySocket.getOutputStream());
+	private Socket senderSocket;
+	private DataOutputStream outputStream;
+	
+	public TCPSender(Socket socket, Message message) throws IOException {
+		this.senderSocket = socket;
+		outputStream = new DataOutputStream(senderSocket.getOutputStream());
+		sendData(message);
 	}
 	
-	
-	/* Sender */
-	public void sendData(byte[] dataToSend) throws IOException {
-		int dataLength = dataToSend.length;
-		dout.writeInt(dataLength);
-		dout.write(dataToSend, 0, dataLength);
-		dout.flush();
-	}
-	
-	public static void main(String[] args) throws IOException {
-		TCPSender h = new TCPSender();
-		TCPSender g = new TCPSender();
+	// Writes the message data to the output stream and sends it through
+	public void sendData(Message message) throws IOException {
+		int dataLength = message.getByteArray().length;
+		int mType = message.getMessageType();
+		byte[] dataToSend = message.getByteArray();
 		
+		outputStream.writeInt(dataLength);
+		outputStream.writeInt(mType);
+		outputStream.write(dataToSend, 0, dataLength);
+		outputStream.flush();
+		System.out.println("TCPSender.java:         Connected to another node and just sent message.");
+	}
+	public static void main(String[] args) throws IOException {
+
 	}
 
-	
+
 }

@@ -1,22 +1,18 @@
 package cs455.overlay.wireformats;
 
+import java.io.IOException;
+
 public class Deregister extends Message {
 	// This is sent right before a messaging node leaves the overlay
-	int messageType;
-	private String ipAddress;
-	private int portNumber;
-	private String registryHost;
-	private int registryPort;
+	private long payload;
+	private byte[] messageBytes;
+	private int messageType;	
 	
-	
-	public Deregister( String IP, int PN){
-		ipAddress = IP;
-		portNumber = PN;
-		messageType = getMessageNumber("DEREGISTER_REQUEST");
-
-		
-	}
-	
-	
+	/** Constructor */
+	public Deregister(String ipAddr, int portNumber) throws IOException{
+			this.messageType =getMessageNumber("DEREGISTER_REQUEST");
+			this.payload = generateRandomPayload();		
+			this.messageBytes = registerMarshaller(payload, ipAddr, portNumber);
+		}
 }
 	

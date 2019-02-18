@@ -2,57 +2,40 @@ package cs455.overlay.transport;
 import java.io.*;
 import java.net.*;
 
-public class TCPServerThread  {
-	public ServerSocket myServerSocket;
-	public int portFinder = 1025;
+import cs455.overlay.node.Node;
 
-	/* Constructor for when we are given a specific port number  */
-	public TCPServerThread(int portNumber) throws IOException {
-		openRegistryPort(portNumber); 
+
+public class TCPServerThread implements Runnable {
+	private ServerSocket serverSocket;
+	private DataInputStream din;
+	private Node node;
+
+	/*	Constructor for Registry node.
+	 *  creates thread to form serverSocket to listen for connections */
+	public TCPServerThread(ServerSocket tcpSocket, Node n) throws IOException {
+		this.serverSocket = tcpSocket;
+		this.node = n;
 	}
-	
-	/* Constructor for when we have to find an open port  */
-	public TCPServerThread() throws IOException {
-		findOpenPort(); 
-	}	
-	
-	/* Opens a the port for the registry at a given port number */
-	public void openRegistryPort( int portNumber) throws IOException{			
-		try {	
-			myServerSocket = new ServerSocket(portNumber); 
-			System.out.println("Registry socket located at port: "+ portNumber);
-		} catch(IOException e) {
-			System.out.println("Unable to connect to provided port, "+portNumber+" because of  "+ e);
-			System.exit(1);
-		}
-	}
-	
-	/* Creates a socket and tries to connect to first open port. If no errors result then one can assume a
-	 * successful connection was made. */
-	private void findOpenPort() throws IOException {
+
+	public void run() {
+		System.out.println("TCPServerThread.java:    Now my serverSocket is waiting for a connection.");
 		while(true) {
-			try {	
-				myServerSocket = new ServerSocket(portFinder); 
-				System.out.println("connected to new port: "+ portFinder);
-				break;	
-			} catch(IOException e) {
-				portFinder++; 
-				System.out.println("Client::main::creating_the_socket:: " + e);
+			try {
+				// Block on accepting connections. Once it has received a connection it will return a socket for us to use.
+				Socket incomingConnectionSocket = serverSocket.accept();
+				System.out.println("TCPServerThread.java:    Recieved a connection; Now creating reciever thread.");
+
+				//If we get here we are no longer blocking, so we accepted a new connection on a new socket
+				Thread receiverThread = new Thread(new TCPRecieverThread(incomingConnectionSocket, node));
+				receiverThread.start();
+			}catch (IOException e) {
+				System.out.println("TCPServerThread.java:     Server::main::accepting_connections:: " + e);
+				System.exit(1);
 			}
 		}
-	}	
-	
-	
-	
-//	public static void main(String[] args) throws IOException {
-//		TCPServerThread x = new TCPServerThread();
-//		TCPServerThread y = new TCPServerThread();
-//	}
+	}
+
 
 }
 
 
-// NOTES: 
-// the line below is used if a machine has multiple ip addresses 
-//ServerSocket serverSocket = new ServerSocket(5000, 100, InetAddress.getHostByName(“address2.cs.colostate.edu”));
-// TCPServerSocket is used to accept incoming TCP communications. 

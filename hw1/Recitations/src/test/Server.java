@@ -38,7 +38,7 @@ public class Server {
 			DataOutputStream outputStream = new DataOutputStream(incomingConnectionSocket.getOutputStream());
 
 			//Let's send a message to our new friend
-			String x = new String("what class if sfor. ");
+			String x = new String("what class is this for?");
 			byte[] msgToClient = x.getBytes();
 			Integer msgToClientLength = msgToClient.length;
 
@@ -52,8 +52,7 @@ public class Server {
 			//Try to read an integer from our input stream. This will block if there is nothing.
 			msgLength = inputStream.readInt();
 
-			//If we got here that means there was an integer to 
-			// read and we have the length of the rest of the next message.
+			//If we got here that means there was an integer to read and we have the length of the rest of the next message.
 			System.out.println("Received a message length of: " + msgLength);
 
 			//Try to read the incoming message.
