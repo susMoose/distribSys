@@ -4,7 +4,7 @@ import cs455.overlay.node.Node;
 
 public class EventFactory {
 	private static final EventFactory instance = new EventFactory(); 
-	private MessagingNodesList messagingNodesList = new MessagingNodesList();
+	private MessagingNodesList messagingNodesList;
 	private EventFactory() {}
 
 	//static method to create instance of singleton class
@@ -13,14 +13,15 @@ public class EventFactory {
 	}
 	
 	public void createEvent(int messageType, byte[] data, Node node) {
+		messagingNodesList =node.getCurrentMessagingNodesList();
 		Event event = new Event(data, node);
 		// Find what type of message was sent and call the proper unmarshalling fn
 		switch(messageType) {
-			case 0: event.readRegisterRequest(messagingNodesList); break;
-			case 1: event.readRegisterResponse(); break;
+			case 0: event.readRegisterRequest(messagingNodesList); break; //done
+			case 1: event.readRegisterResponse(); break;	//done
 			case 2: event.readDeregisterRequest(messagingNodesList); break;
 			case 3: event.readDeregisterResponse(); break;
-			case 4: event.readMessagingNodesList(); break;
+			case 4: event.readMessagingNodesList(); break;	//done
 			case 5: event.readLinkWeights(); break;
 			case 6: event.readTaskInititate(); break;
 			case 7: event.readTaskComplete(); break;

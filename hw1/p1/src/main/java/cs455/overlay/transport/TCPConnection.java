@@ -26,7 +26,7 @@ public class TCPConnection {
 			while(true) {
 				try {	
 					serverSocket = new ServerSocket(portFinder); 
-					System.out.println("TCPConnection.java:      Message Node server socket located at port: "+ portFinder);
+//					System.out.println("TCPConnection.java:      Message Node server socket located at port: "+ portFinder);
 					break;	
 				} catch(IOException e) {
 					portFinder++; 

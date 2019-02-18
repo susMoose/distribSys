@@ -9,17 +9,19 @@ import cs455.overlay.wireformats.Message;
 import cs455.overlay.wireformats.RegisterMessage;
 
 
-public class MessagingNode{
+public class MessagingNode {
 	private Node mNode; 
 
 	/* Constructor */
 	public MessagingNode(String registryHost, int registryPort) throws IOException {
 		Thread listener = new Thread (new CommandInput(this)); listener.start();
-
 		// Creating our inner node that holds the ServerSocket
 		mNode = new Node();	
+		System.out.println("I am "+ mNode.ipAddr + "("+ mNode.portNum+")\n");
 		
 		// Creating a registration message. 
+		System.out.println("|> Registering myself with " + registryHost.substring(0,6));
+
 		Message message = new RegisterMessage(mNode.ipAddr, mNode.portNum);
 
 		// Creating a socket that connects directly to the registry.
@@ -37,6 +39,16 @@ public class MessagingNode{
 	/* The messaging node leaves the overlay by sending a deregistration message and awaits 
 	 * response before terminating its process and exiting.*/
 	public void exitOverlay() {}
+	/* Lists host name + port numbers */
+	public void listMessagingNodes() {
+		
+		System.out.println("(1)");
+		mNode.showMessagingNodesList();
+		
+		System.out.println("(3)");
+		mNode.getFutureMessagingNodesList().showLinks();
+	}
+
 
 
 	public static void main(String[] args) throws IOException {

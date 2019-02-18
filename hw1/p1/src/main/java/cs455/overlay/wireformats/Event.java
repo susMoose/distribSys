@@ -43,29 +43,29 @@ public class Event {
 			int portNumber = din.readInt();
 			long payload = din.readLong();
 
-			System.out.println("\n|> Payload Recieved: " + payload +"\n");
+			System.out.println("|> register rqst from: "+ipAddress.substring(0,6) +", Payload Recieved: " + payload);
 
 			node.addToReceiveSum(payload);
 			node.incrementReceiveTracker();
-			node.getSums();
+			//node.getSums();
 
 			String additionalInfo, statusCode;
 
 			// DO NOT FORGET : Check if request matches the requests origin //ADD EXCEPTION MESSAGE
 			// If the node is already registered 
-			synchronized(this) {
-				if (mNodeList.searchFor(ipAddress,portNumber)){
-					System.out.println("Registration request was unsuccessful as the node located at "+ipAddress+" ("+portNumber+") was already among the registered nodes.");
-					additionalInfo ="Registration request failed. The node being added was already registered in the registry.";
-					statusCode = "FAILURE";
-				}
-				else {
-					// Else add the Node 
-					mNodeList.addNode(ipAddress, portNumber);
-					additionalInfo ="Registration request successful. The number of messaging nodes currently constituting the overlay is (" + mNodeList.getSize() +").";
-					statusCode = "SUCCESS";
-				}
+			//			synchronized(this) {
+			if (mNodeList.searchFor(ipAddress,portNumber)){
+				System.out.println("Registration request was unsuccessful as the node located at "+ipAddress+" ("+portNumber+") was already among the registered nodes.");
+				additionalInfo ="Registration request failed. The node being added was already registered in the registry.";
+				statusCode = "FAILURE";
 			}
+			else {
+				// Else add the Node 
+				mNodeList.addNode(ipAddress, portNumber);
+				additionalInfo ="Registration request successful. The number of messaging nodes currently constituting the overlay is (" + mNodeList.getSize() +").";
+				statusCode = "SUCCESS";
+			}
+			//			}
 			//Now sending a RegisterResponse
 			Message response = new RegisterResponse(statusCode, additionalInfo);
 			Socket senderSocket = new Socket(ipAddress, portNumber);
@@ -90,10 +90,16 @@ public class Event {
 			din.readFully(info);
 			long payload = din.readLong();
 
-			System.out.println("\n|> Payload Recieved: " + payload +"\n");
+			String stat = new String(status);
+			
+			if( stat.contentEquals("SUCCESS")) {
+				System.out.println();
+			}
+
+			System.out.println("|> register response: "+ stat  +", Payload Recieved: " + payload);
 			node.addToReceiveSum(payload);
 			node.incrementReceiveTracker();
-			node.getSums();
+			//node.getSums();
 		} catch (IOException e) {
 			System.out.println("Event.java:              Failed to read message. ");
 		}
@@ -104,9 +110,12 @@ public class Event {
 
 	public void readDeregisterResponse() {
 	}
-
+	
+	//Each node stores this list of who they want to connect with in their future connections slot 
 	@SuppressWarnings("unchecked")
 	public void readMessagingNodesList() {
+		System.out.println("\n-->Recieved messaging nodes list ");
+		
 		iStream = new ByteArrayInputStream(marshalledBytes);	
 		din = new DataInputStream(new BufferedInputStream(iStream));
 		try {
@@ -115,32 +124,54 @@ public class Event {
 			byte[] listBytes = new byte[listByteLength];
 			din.readFully(listBytes);
 			long payload = din.readLong();
-						
-			
+
+
 			//Unmarshall object of Messaging Node list
 			ArrayList<NodeLink> contactList = new ArrayList<>();
 			ByteArrayInputStream bis = new ByteArrayInputStream(listBytes);
-            ObjectInputStream ois = new ObjectInputStream(bis);
+			ObjectInputStream ois = new ObjectInputStream(bis);
 
 			contactList = (ArrayList<NodeLink>) ois.readObject(); 
 			MessagingNodesList newList = new MessagingNodesList(contactList);
 			node.setMessagingNodesList(newList,nNeededConnections);
+			node.getFutureMessagingNodesList().showLinks();
+			System.out.println("\n");
 			
-			
-			
-			System.out.println("\n|> Payload Recieved: " + payload +"\n");
+//			System.out.println("|> Payload Recieved: " + payload );
 			node.addToReceiveSum(payload);
 			node.incrementReceiveTracker();
-			node.getSums();
-			
+			//node.getSums();
+
 		} catch (IOException e) {
 			System.out.println("Event.java:              Failed to read message. "); 
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		//Once here the node has its list of people to connect to and its time to start trying to make friends and register on their friend lists
 		
-		
+		// Creating a registration message. 
+		for(int i=0; i<node.getFutureMessagingNodesList().getSize(); i++) {
+
+			Message message;
+			try {
+					message = new RegisterMessage(node.ipAddr, node.portNum);
+					String friendIP = node.getFutureMessagingNodesList().getNodeAtIndex(i).ipAddress;
+					int friendPort = node.getFutureMessagingNodesList().getNodeAtIndex(i).port;
+					System.out.println("|> Registering myself with " + friendIP.substring(0,6) + "("+friendPort+")");
+
+					// Creating a socket that connects directly to the registry.
+					Socket senderSocket = new Socket(friendIP, friendPort );
+
+					// Sending message
+					TCPSender sendingMessage = new TCPSender(senderSocket, message);
+
+					node.addToSendSum(message.getPayload()); 
+					node.incrementSendTracker();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	public void readLinkWeights() {

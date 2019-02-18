@@ -27,7 +27,7 @@ public class TCPSender {
 		outputStream.writeInt(mType);
 		outputStream.write(dataToSend, 0, dataLength);
 		outputStream.flush();
-		System.out.println("TCPSender.java:         Connected to another node and just sent message.");
+//		System.out.println("TCPSender.java:         Sent message to: " + senderSocket.getLocalAddress().getHostName()+"("+ senderSocket.getPort()+")");
 	}
 	public static void main(String[] args) throws IOException {
 

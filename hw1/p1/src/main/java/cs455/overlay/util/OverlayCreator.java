@@ -140,7 +140,7 @@ public class OverlayCreator {
 
 
 
-	///send message from our node to others
+	///send message from our regnode to others
 	private void sendOutLists(int reciever, MessagingNodesList peerlist) {
 		try {
 			Message message = new  ListMessage(peerlist, Cr);

@@ -17,7 +17,8 @@ public class CommandInput implements Runnable {
 		while (true) {
 			String request = scan.next();
 			if (request.contentEquals("list-messaging-nodes")||request.contentEquals("lmn")) {
-				reg.listMessagingNodes();
+				if (reg ==null) {mNode.listMessagingNodes();}else {
+				reg.listMessagingNodes();}
 			}
 			else if(request.contentEquals("list-weights")) {
 				reg.listWeights();

@@ -7,7 +7,7 @@ import cs455.overlay.wireformats.CommandInput;
 
 
 
-public class Registry {
+public class Registry extends Node {
 	private int regPortNum;
 	private  Node rNode;
 
@@ -33,7 +33,7 @@ public class Registry {
 
 	/* Sets up overlay by sending messaging nodes the contact info for other messaging nodes */
 	public void setupOverlay(int connectionRequirement) {
-		OverlayCreator overlayCreation = new OverlayCreator(connectionRequirement, rNode.getMessagingNodesList(),rNode);
+		OverlayCreator overlayCreation = new OverlayCreator(connectionRequirement, rNode.getCurrentMessagingNodesList(),rNode);
 	}
 
 

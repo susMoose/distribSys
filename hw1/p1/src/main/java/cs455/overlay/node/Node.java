@@ -12,7 +12,8 @@ public class Node {
 	private int nPeerMessagingNodes;
 	private int sendTracker = 0, receiveTracker = 0, relayTracker = 0;
 	private long sendSummation = 0, receiveSummation = 0;
-	private MessagingNodesList messagingNodeList  = new MessagingNodesList();
+	private MessagingNodesList futureConnectionsList= new MessagingNodesList();
+	private MessagingNodesList currentConnectionsList= new MessagingNodesList();
 
 
 	// Node for registry constructor
@@ -69,11 +70,14 @@ public class Node {
 
 
 	public void showMessagingNodesList() {
-		messagingNodeList.showLinks();
+		currentConnectionsList.showLinks();
 	} 
 	
-	public MessagingNodesList getMessagingNodesList() {
-		return messagingNodeList;
+	public MessagingNodesList getCurrentMessagingNodesList() {
+		return currentConnectionsList;
+	} 
+	public MessagingNodesList getFutureMessagingNodesList() {
+		return futureConnectionsList;
 	} 
 	
 	
@@ -82,11 +86,13 @@ public class Node {
 //		System.out.println("RelayTracker: "+ relayTracker);
 	}
 	public void setMessagingNodesList(MessagingNodesList mnl) {
-		this.messagingNodeList = mnl;
+		this.currentConnectionsList= mnl;
 	}
 	
 	public void setMessagingNodesList(MessagingNodesList mnl, int connectionsNumber) {
 		this.nPeerMessagingNodes = connectionsNumber;
-		this.messagingNodeList = mnl;
+		this.futureConnectionsList = mnl;
 	}
+	
+	public int getNumberNeededConnections() {return nPeerMessagingNodes;}
 }

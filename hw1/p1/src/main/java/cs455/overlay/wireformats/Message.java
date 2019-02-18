@@ -25,8 +25,6 @@ public class Message {
 		byte[] ipAddress = ipAddr.getBytes();
 		int ipAddressLength = ipAddress.length;
 
-		System.out.println("\n|> Payload Sent: " + payload+"\n");
-
 		dout.writeInt(ipAddressLength);
 		dout.write(ipAddress);
 		dout.writeInt(portNumber);		
@@ -50,7 +48,7 @@ public class Message {
 		byte[] info = additionalInfo.getBytes();
 		int infoLength = info.length;
 
-		System.out.println("\n|> Payload Sent: " + payload+"\n");
+		System.out.println("|> Node's registry status: " + statusCode +", Payload Sent: " + payload);
 
 		dout.writeInt(statLength); 
 		dout.write(status);
@@ -78,7 +76,6 @@ public class Message {
 		this.payload = pyld;
 		ByteArrayOutputStream baOutputStream = new ByteArrayOutputStream();
 		DataOutputStream dout =	new DataOutputStream(new BufferedOutputStream(baOutputStream));
-
 
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		

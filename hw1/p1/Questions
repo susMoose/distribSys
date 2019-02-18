@@ -1,14 +1,15 @@
 
-Finished: successfully sent registry response, created messagingNodeLists   :)
+Finished: all nodes have list of who they want to connect with 
 
-Next steps: Finish making peer list for odd # of friends then Create a message for each produced peer list (dont forget double connections)
+Next steps: when node recieves a sucessful regisration response it should add that to its current connections list
 	
 
 
 Qs:
+How long do you give after registration 
 when registry encounters duplicate attempted node registration, how should it produce an error 
 		- duplicate test does not work yet 
-		
+Am I preventing partician 
 Does who they get assigned to really have to be random?		
 The number of peer
 messaging nodes included in messages to different messaging nodes may vary from CR through 1? 		

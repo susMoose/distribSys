@@ -18,12 +18,12 @@ public class TCPServerThread implements Runnable {
 	}
 
 	public void run() {
-		System.out.println("TCPServerThread.java:    Now my serverSocket is waiting for a connection.");
+//		System.out.println("TCPServerThread.java:    Now my serverSocket is waiting for a connection.");
 		while(true) {
 			try {
 				// Block on accepting connections. Once it has received a connection it will return a socket for us to use.
 				Socket incomingConnectionSocket = serverSocket.accept();
-				System.out.println("TCPServerThread.java:    Recieved a connection; Now creating reciever thread.");
+//				System.out.println("TCPServerThread.java:    Recieved a connection; Now creating reciever thread.");
 
 				//If we get here we are no longer blocking, so we accepted a new connection on a new socket
 				Thread receiverThread = new Thread(new TCPRecieverThread(incomingConnectionSocket, node));
