@@ -3,6 +3,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import cs455.overlay.transport.StoreConnections;
 import cs455.overlay.transport.TCPConnection;
 import cs455.overlay.transport.TCPServerThread;
 import cs455.overlay.wireformats.MessagingNodesList;
@@ -14,12 +15,15 @@ public class Node {
 	private long sendSummation = 0, receiveSummation = 0;
 	private MessagingNodesList futureConnectionsList= new MessagingNodesList();
 	private MessagingNodesList currentConnectionsList= new MessagingNodesList();
+	public StoreConnections list = new StoreConnections();
+
 
 
 	// Node for registry constructor
 	public Node(int portNumber) throws UnknownHostException{
 		portNum = portNumber;
 		InetAddress inetAddress = InetAddress.getLocalHost();
+		System.out.println(inetAddress);
 		ipAddr = inetAddress.getHostName()+ ".cs.colostate.edu";
 		try {
 			// TCPConnection allocates a serverSocket for the registry 
@@ -52,6 +56,8 @@ public class Node {
 		serverThread.start();
 	}
 	
+	
+	
 	public void incrementSendTracker() {
 		synchronized(this) {sendTracker++;}
 	}
@@ -80,7 +86,9 @@ public class Node {
 		return futureConnectionsList;
 	} 
 	
-	
+	public void setPeerNumber(int peerNumber) {
+		this.nPeerMessagingNodes = peerNumber;
+	}
 	public void getSums() {
 		System.out.println("SendSummation: "+ sendSummation +", ReceiveSummation: "+ receiveSummation + ", SendTracker: "+ sendTracker + ", RecieveTracker: "+ receiveTracker);
 //		System.out.println("RelayTracker: "+ relayTracker);
@@ -95,4 +103,11 @@ public class Node {
 	}
 	
 	public int getNumberNeededConnections() {return nPeerMessagingNodes;}
+	
+	
+	public void decreaseNeededConnects() {
+		synchronized (this) {
+			nPeerMessagingNodes--;
+		}
+	}
 }

@@ -1,5 +1,6 @@
 package cs455.overlay.transport;
-import java.io.*;
+import java.io.DataInputStream;
+import java.io.IOException;
 import java.net.*;
 
 import cs455.overlay.node.Node;
@@ -37,8 +38,7 @@ public class TCPRecieverThread  implements Runnable {
 				break;
 			}	
 		}
-		eventFactory.createEvent(messageType, data, node);
-//		System.out.println("TCPRecieverThread.java:  Made it out of eventFactory");
+		eventFactory.createEvent(messageType, data, node, socket);
 	}
 
 

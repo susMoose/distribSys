@@ -4,8 +4,10 @@ import java.io.IOException;
 import java.lang.reflect.Array;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Random;
 
 import cs455.overlay.node.Node;
+import cs455.overlay.transport.StoreWeights;
 import cs455.overlay.transport.TCPSender;
 import cs455.overlay.wireformats.ListMessage;
 import cs455.overlay.wireformats.Message;
@@ -14,10 +16,12 @@ import cs455.overlay.wireformats.RegisterMessage;
 
 public class OverlayCreator {
 	private MessagingNodesList registryMasterList;
-	private int Cr;
+	private MessagingNodesList peerList;
+	private MessagingNodesList peerListWithLinks;
+	public static int Cr ;
 	private int numberOfNodes; 
 	private Node registry;
-	private ArrayList<ArrayList<Integer>> contactList;	// the node in my registry master list at index i,
+	public  ArrayList<ArrayList<Integer>> contactList;	// the node in my registry master list at index i,
 														// stores the indexes of the nodes they need to 
 														// contact listed at their index in this array 
 	
@@ -37,6 +41,9 @@ public class OverlayCreator {
 		for (int i=0; i< numberOfNodes; i++) {
 			contactList.add(new ArrayList<Integer>());
 		}
+		
+
+		
 		decideMapping();
 	}
 
@@ -46,6 +53,7 @@ public class OverlayCreator {
 		if(Cr%2 == 0) {
 			for(int i = 0; i<numberOfNodes; i++) {
 				System.out.println("Node " + registryMasterList.getNodeAtIndex(i).ipAddress + ": ");
+				peerListWithLinks = new MessagingNodesList(registryMasterList.getNodeAtIndex(i).ipAddress, registryMasterList.getNodeAtIndex(i).port);
 				makeEvenFriends(i);
 			}
 		}
@@ -53,6 +61,8 @@ public class OverlayCreator {
 		else if(numberOfNodes%2 == 0 && Cr%2 != 0 ) {
 			for(int i = 0; i<numberOfNodes; i++) {
 				System.out.println("Node " + registryMasterList.getNodeAtIndex(i).ipAddress + ": ");
+				peerListWithLinks = new MessagingNodesList(registryMasterList.getNodeAtIndex(i).ipAddress, registryMasterList.getNodeAtIndex(i).port);
+
 				makeOddFriends(i);
 			}
 		}		
@@ -60,7 +70,7 @@ public class OverlayCreator {
 
 
 	private void makeEvenFriends(int mainNode) {
-		MessagingNodesList peerList = new MessagingNodesList();
+		peerList = new MessagingNodesList();
 
 		int  fIndex;
 		for(int i=1; i==(Cr/2); i++) {
@@ -72,7 +82,7 @@ public class OverlayCreator {
 			if (!contactList.get(mainNode).contains(fIndex)) {
 				contactList.get(mainNode).add(fIndex);
 				contactList.get(fIndex).add(mainNode);
-				addFriend(peerList, mainNode, fIndex);
+				addFriend(mainNode, fIndex);
 			}
 			if(mainNode-i < 0) {
 				// befriend node at index, my node - i (handling array index looping)
@@ -84,17 +94,16 @@ public class OverlayCreator {
 			if (!contactList.get(mainNode).contains(fIndex)) {
 				contactList.get(mainNode).add(fIndex);
 				contactList.get(fIndex).add(mainNode);
-				addFriend(peerList, mainNode, fIndex);
+				addFriend( mainNode, fIndex);
 			}	
 		}
-		//		peerList.showLinks();
-		///Send message
-		sendOutLists(mainNode, peerList);
+		StoreWeights.addMessageNodeList(peerListWithLinks);
+		sendOutLists(mainNode);
 	}
 
 
 	private void makeOddFriends(int mainNode) {
-		MessagingNodesList peerList = new MessagingNodesList();
+		peerList = new MessagingNodesList();
 
 		//Getting node directly halfway across array from our index
 		int halfway = mainNode+(numberOfNodes/2);
@@ -103,7 +112,7 @@ public class OverlayCreator {
 		if (!contactList.get(mainNode).contains(halfway)) {
 			contactList.get(mainNode).add(halfway);
 			contactList.get(halfway).add(mainNode);
-			addFriend(peerList, mainNode, halfway);
+			addFriend( mainNode, halfway);
 		}
 
 		//Now getting the nodes to the left and right of halfway node
@@ -115,7 +124,7 @@ public class OverlayCreator {
 			if (!contactList.get(mainNode).contains(fIndex)) {
 				contactList.get(mainNode).add(fIndex);
 				contactList.get(fIndex).add(mainNode);
-				addFriend(peerList, mainNode, fIndex);
+				addFriend(mainNode, fIndex);
 			}
 
 			fIndex =  halfway-i;
@@ -124,31 +133,34 @@ public class OverlayCreator {
 			if (!contactList.get(mainNode).contains(fIndex)) {
 				contactList.get(mainNode).add(fIndex);
 				contactList.get(fIndex).add(mainNode);
-				addFriend(peerList, mainNode, fIndex);
+				addFriend( mainNode, fIndex);
 			}
 		}
-		//peerList.showLinks();
-		sendOutLists(mainNode, peerList);
+		StoreWeights.addMessageNodeList(peerListWithLinks);
+		sendOutLists(mainNode);
 	}
 
-	private void addFriend(MessagingNodesList peerList, int main, int fIndex) {
+	private void addFriend(int main, int fIndex) {
 		String friendIP = registryMasterList.getNodeAtIndex(fIndex).ipAddress;
 		int friendPort= registryMasterList.getNodeAtIndex(fIndex).port;
 		peerList.addNode( friendIP, friendPort);
-
+		
+		int linkWeight = new Random().nextInt((10 - 1) + 1) + 1;
+		peerListWithLinks.addNode(friendIP, friendPort,linkWeight);
+		
 	}
 
 
 
-	///send message from our regnode to others
-	private void sendOutLists(int reciever, MessagingNodesList peerlist) {
+	///send message from our RegNode to others
+	private void sendOutLists(int reciever) {
 		try {
-			Message message = new  ListMessage(peerlist, Cr);
+			Message message = new  ListMessage(peerList, peerList.getSize());
 			String rNodeIP  = registryMasterList.getNodeAtIndex(reciever).ipAddress;
 			int rPort = registryMasterList.getNodeAtIndex(reciever).port;
 			
 			Socket senderSocket = new Socket(rNodeIP, rPort);
-			TCPSender sedningMessage = new TCPSender(senderSocket, message);
+			TCPSender sendingMessage = new TCPSender(senderSocket, message);
 			registry.addToSendSum(message.getPayload());
 			registry.incrementSendTracker();
 			

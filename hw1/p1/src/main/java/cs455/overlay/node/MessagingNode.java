@@ -2,6 +2,9 @@ package cs455.overlay.node;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 import cs455.overlay.transport.TCPSender;
 import cs455.overlay.wireformats.CommandInput;
@@ -18,7 +21,7 @@ public class MessagingNode {
 		// Creating our inner node that holds the ServerSocket
 		mNode = new Node();	
 		System.out.println("I am "+ mNode.ipAddr + "("+ mNode.portNum+")\n");
-		
+
 		// Creating a registration message. 
 		System.out.println("|> Registering myself with " + registryHost.substring(0,6));
 
@@ -41,15 +44,23 @@ public class MessagingNode {
 	public void exitOverlay() {}
 	/* Lists host name + port numbers */
 	public void listMessagingNodes() {
-		
-		System.out.println("(1)");
+
+		System.out.println("(Connections)");
 		mNode.showMessagingNodesList();
-		
-		System.out.println("(3)");
+
+		System.out.println("(Desired connections)");
 		mNode.getFutureMessagingNodesList().showLinks();
 	}
 
-
+	public void showHash() {
+		Set set = mNode.list.getMap().entrySet();
+		Iterator iterator = set.iterator();
+		while(iterator.hasNext()) {
+			Map.Entry mentry = (Map.Entry)iterator.next();
+			System.out.print( mentry.getKey() + " --> ");
+			System.out.println(mentry.getValue());
+		}
+	}
 
 	public static void main(String[] args) throws IOException {
 		int mPort = Integer.parseInt(args[1]);

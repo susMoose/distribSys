@@ -1,5 +1,7 @@
 package cs455.overlay.wireformats;
 
+import java.net.Socket;
+
 import cs455.overlay.node.Node;
 
 public class EventFactory {
@@ -12,9 +14,9 @@ public class EventFactory {
 		return instance;
 	}
 	
-	public void createEvent(int messageType, byte[] data, Node node) {
+	public void createEvent(int messageType, byte[] data, Node node, Socket sock) {
 		messagingNodesList =node.getCurrentMessagingNodesList();
-		Event event = new Event(data, node);
+		Event event = new Event(data, node, sock);
 		// Find what type of message was sent and call the proper unmarshalling fn
 		switch(messageType) {
 			case 0: event.readRegisterRequest(messagingNodesList); break; //done

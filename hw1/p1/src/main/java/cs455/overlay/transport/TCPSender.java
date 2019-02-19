@@ -1,6 +1,7 @@
 package cs455.overlay.transport;
 
-import java.io.*;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.net.*;
 
 import cs455.overlay.node.Node;

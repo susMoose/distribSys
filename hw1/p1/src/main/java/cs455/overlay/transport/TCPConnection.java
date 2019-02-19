@@ -1,6 +1,6 @@
 package cs455.overlay.transport;
 
-import java.io.*;
+import java.io.IOException;
 import java.net.*;
 
 public class TCPConnection {

@@ -1,18 +1,18 @@
 
 Finished: all nodes have list of who they want to connect with 
 
-Next steps: when node recieves a sucessful regisration response it should add that to its current connections list
+Next steps: when node receives a successful registration response it should add that to its current connections list
 	
 
 
 Qs:
+how to get hostname 
 How long do you give after registration 
 when registry encounters duplicate attempted node registration, how should it produce an error 
 		- duplicate test does not work yet 
-Am I preventing partician 
 Does who they get assigned to really have to be random?		
-The number of peer
-messaging nodes included in messages to different messaging nodes may vary from CR through 1? 		
+The number of peer messaging nodes included in messages to different messaging nodes may vary from CR through 1? 	
+	
 -----
 // Fix Laters: 
 Event.java: ask how to check if request matches origin ip address
@@ -21,7 +21,7 @@ Event.java: fix error throwing case line 54
 
 Handle  case where a messaging node fails just after it sends a registration request
 - deal with the case where a messaging node registers and deregisters from the registry before the overlay is set up. 
-
+-  printing when all connections are established 
 Fix send tracker
 
 

@@ -1,7 +1,14 @@
 package cs455.overlay.wireformats;
 
-import java.io.*;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
 import java.util.concurrent.ThreadLocalRandom; //ASK 
+
+import cs455.overlay.wireformats.MessagingNodesList.NodeLink;
 
 public class Message {
 	private long payload; 
@@ -48,7 +55,7 @@ public class Message {
 		byte[] info = additionalInfo.getBytes();
 		int infoLength = info.length;
 
-		System.out.println("|> Node's registry status: " + statusCode +", Payload Sent: " + payload);
+//		System.out.println("|> Node's registry status: " + statusCode +", Payload Sent: " + payload);
 
 		dout.writeInt(statLength); 
 		dout.write(status);
@@ -77,14 +84,21 @@ public class Message {
 		ByteArrayOutputStream baOutputStream = new ByteArrayOutputStream();
 		DataOutputStream dout =	new DataOutputStream(new BufferedOutputStream(baOutputStream));
 
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		
-		//Writing byte array for my object
-		ObjectOutput out = new ObjectOutputStream(bos);   
-		out.writeObject(mnl.getList());
-		out.flush();
-		byte[] listBytes = bos.toByteArray();
-		bos.close();
+		ByteArrayOutputStream box=new ByteArrayOutputStream();;
+		DataOutputStream outputBox=new DataOutputStream(box);
+		byte[] listBytes = null, ip = null;
+		int i=0, p= 0;
+		for(NodeLink nod: mnl.getList() ) {
+			System.out.println("  " +nod.ipAddress);
+			ip =  nod.ipAddress.getBytes();
+			p = nod.port;
+			outputBox.writeInt(ip.length);
+			outputBox.write(ip);
+			outputBox.writeInt(p);
+		}
+		listBytes = box.toByteArray();
+		
 		int listBytesLength = listBytes.length;
 		
 		dout.writeInt(nNeededConnections);
@@ -96,11 +110,46 @@ public class Message {
 		marshalledBytes = baOutputStream.toByteArray();
 		baOutputStream.close();
 		dout.close();
+		outputBox.close();
 
 		return marshalledBytes;
 	}
 
-	public byte[] linkWeightsMarshaller() {
+	public byte[] linkWeightsMarshaller(long pyld, int nNeededConnections, MessagingNodesList mnl) throws IOException {
+		this.payload = pyld;
+		ByteArrayOutputStream baOutputStream = new ByteArrayOutputStream();
+		DataOutputStream dout =	new DataOutputStream(new BufferedOutputStream(baOutputStream));
+
+		
+		ByteArrayOutputStream box=new ByteArrayOutputStream();;
+		DataOutputStream outputBox=new DataOutputStream(box);
+		byte[] listBytes = null, ip = null;
+		int i=0, p= 0, weight=0;
+		for(NodeLink nod: mnl.getList() ) {
+			System.out.println("  " +nod.ipAddress);
+			ip =  nod.ipAddress.getBytes();
+			p = nod.port;
+			weight=nod.getLinkWeight();
+			outputBox.writeInt(ip.length);
+			outputBox.write(ip);
+			outputBox.writeInt(p);
+			outputBox.writeInt(weight);
+		}
+		listBytes = box.toByteArray();
+		
+		int listBytesLength = listBytes.length;
+		
+		dout.writeInt(nNeededConnections);
+		dout.writeInt(listBytesLength);
+		dout.write(listBytes);
+		dout.writeLong(payload);
+		dout.flush();
+		
+		marshalledBytes = baOutputStream.toByteArray();
+		baOutputStream.close();
+		dout.close();
+		outputBox.close();
+
 		return marshalledBytes;
 	}
 

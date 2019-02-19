@@ -9,7 +9,7 @@ public class CommandInput implements Runnable {
 	private Scanner scan = new Scanner(System.in);
 	private Registry reg;
 	private MessagingNode mNode;
-	
+
 	public CommandInput(Registry r) { this.reg = r;	}
 	public CommandInput(MessagingNode m) { this.mNode = m;}
 
@@ -17,8 +17,14 @@ public class CommandInput implements Runnable {
 		while (true) {
 			String request = scan.next();
 			if (request.contentEquals("list-messaging-nodes")||request.contentEquals("lmn")) {
-				if (reg ==null) {mNode.listMessagingNodes();}else {
-				reg.listMessagingNodes();}
+				if (reg ==null) {
+					mNode.listMessagingNodes();
+					mNode.showHash();
+				}else {
+					reg.listMessagingNodes();
+					reg.showHash();
+				}
+
 			}
 			else if(request.contentEquals("list-weights")) {
 				reg.listWeights();
