@@ -52,7 +52,6 @@ public class OverlayCreator {
 		// Cr is even
 		if(Cr%2 == 0) {
 			for(int i = 0; i<numberOfNodes; i++) {
-				System.out.println("Node " + registryMasterList.getNodeAtIndex(i).ipAddress + ": ");
 				peerListWithLinks = new MessagingNodesList(registryMasterList.getNodeAtIndex(i).ipAddress, registryMasterList.getNodeAtIndex(i).port);
 				makeEvenFriends(i);
 			}
@@ -60,9 +59,7 @@ public class OverlayCreator {
 		// There is an even # of nodes and odd connection requirement
 		else if(numberOfNodes%2 == 0 && Cr%2 != 0 ) {
 			for(int i = 0; i<numberOfNodes; i++) {
-				System.out.println("Node " + registryMasterList.getNodeAtIndex(i).ipAddress + ": ");
 				peerListWithLinks = new MessagingNodesList(registryMasterList.getNodeAtIndex(i).ipAddress, registryMasterList.getNodeAtIndex(i).port);
-
 				makeOddFriends(i);
 			}
 		}		
@@ -71,13 +68,11 @@ public class OverlayCreator {
 
 	private void makeEvenFriends(int mainNode) {
 		peerList = new MessagingNodesList();
-
 		int  fIndex;
-		for(int i=1; i==(Cr/2); i++) {
+		for(int i=1; i<=(Cr/2); i++) {
 			// befriend node at index, my node + i
 			fIndex = mainNode+i;
 			if(mainNode+i >= numberOfNodes)  fIndex =  ((mainNode+i) % numberOfNodes);
-
 
 			if (!contactList.get(mainNode).contains(fIndex)) {
 				contactList.get(mainNode).add(fIndex);
@@ -117,7 +112,7 @@ public class OverlayCreator {
 
 		//Now getting the nodes to the left and right of halfway node
 		int fIndex;
-		for(int i=1; i==(Cr/2); i++) {
+		for(int i=1; i<=(Cr/2); i++) {
 			fIndex = halfway+i;
 			if(halfway+i >= numberOfNodes) fIndex =  ((halfway+i) % numberOfNodes);
 

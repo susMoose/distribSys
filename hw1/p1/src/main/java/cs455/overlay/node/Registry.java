@@ -63,12 +63,14 @@ public class Registry extends Node {
 	/*Sends a link_weights message to all register nodes in the overlay.
 	 * This command should be called once after the setupOverlay command is finished. */
 	public void sendOverlayLinkWeights() {
+		System.out.println("\nsending link weights");
 		for(int i= 0; i < rNode.getCurrentMessagingNodesList().getSize();i++) {
 			try {
 				MessagingNodesList links = StoreWeights.getListAtIndex(i);
 				Message message = new LinkWeights(links, links.getSize());
 				
 				Socket senderSocket = rNode.list.getSocketWithName(links.getOwnerIP());//new Socket(links.getOwnerIP(),links.getOwnerPort());
+				System.out.println("    " + senderSocket);
 				TCPSender sendingMessage = new TCPSender(senderSocket, message);
 				rNode.addToSendSum(message.getPayload());
 				rNode.incrementSendTracker();

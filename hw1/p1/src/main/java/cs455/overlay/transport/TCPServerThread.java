@@ -7,7 +7,6 @@ import cs455.overlay.node.Node;
 
 public class TCPServerThread implements Runnable {
 	private ServerSocket serverSocket;
-	private DataInputStream din;
 	private Node node;
 
 	/*	Constructor for Registry node.

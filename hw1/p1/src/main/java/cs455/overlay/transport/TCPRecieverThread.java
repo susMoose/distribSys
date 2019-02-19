@@ -19,7 +19,7 @@ public class TCPRecieverThread  implements Runnable {
 		din = new DataInputStream(socket.getInputStream());
 		this.node = n;
 	}
-	
+
 	public void run() {
 		int dataLength;
 		int messageType = 0;
@@ -29,18 +29,16 @@ public class TCPRecieverThread  implements Runnable {
 				messageType = din.readInt();
 				data = new byte[dataLength];
 				din.readFully(data, 0, dataLength);
-				din.close();
 			} catch (SocketException se) {
 				System.out.println(se.getMessage());
-				break;
 			} catch (IOException ioe) {
 				System.out.println(ioe.getMessage()) ;
-				break;
 			}	
+			eventFactory.createEvent(messageType, data, node, socket);
 		}
-		eventFactory.createEvent(messageType, data, node, socket);
 	}
 
-
-
 }
+
+
+

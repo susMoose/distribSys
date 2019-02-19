@@ -19,28 +19,26 @@ public class CommandInput implements Runnable {
 			if (request.contentEquals("list-messaging-nodes")||request.contentEquals("lmn")) {
 				if (reg ==null) {
 					mNode.listMessagingNodes();
-					mNode.showHash();
 				}else {
 					reg.listMessagingNodes();
-					reg.showHash();
 				}
 
 			}
-			else if(request.contentEquals("list-weights")) {
+			else if(request.contentEquals("list-weights")||request.contentEquals("lw")) {
 				reg.listWeights();
 			}
 			else if(request.contentEquals("setup-overlay")||request.contentEquals("so")) {
 				int Cr = scan.nextInt();
 				reg.setupOverlay(Cr);
 			}
-			else if(request.contentEquals("send-overlay-link-weights")) {
+			else if(request.contentEquals("send-overlay-link-weights")||request.contentEquals("sw")) {
 				reg.sendOverlayLinkWeights();
 			}
 			else if(request.contentEquals("start")) {
 				int numRounds = scan.nextInt();
 				reg.start(numRounds);
 			}
-			else if(request.contentEquals("print-shortest-path")) {
+			else if(request.contentEquals("print-shortest-path")||request.contentEquals("psp")) {
 				mNode.printShortestPath();
 			}
 			else if(request.contentEquals("exit-overlay")) {

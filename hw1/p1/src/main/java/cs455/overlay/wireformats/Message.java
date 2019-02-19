@@ -90,7 +90,7 @@ public class Message {
 		byte[] listBytes = null, ip = null;
 		int i=0, p= 0;
 		for(NodeLink nod: mnl.getList() ) {
-			System.out.println("  " +nod.ipAddress);
+			System.out.println(" msg=>" +nod.ipAddress);
 			ip =  nod.ipAddress.getBytes();
 			p = nod.port;
 			outputBox.writeInt(ip.length);

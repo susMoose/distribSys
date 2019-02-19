@@ -1,6 +1,7 @@
 package cs455.overlay.wireformats;
 
 import java.net.Socket;
+import java.net.SocketException;
 
 import cs455.overlay.node.Node;
 
@@ -24,7 +25,7 @@ public class EventFactory {
 			case 2: event.readDeregisterRequest(messagingNodesList); break;
 			case 3: event.readDeregisterResponse(); break;
 			case 4: event.readMessagingNodesList(); break;	//done
-			case 5: event.readLinkWeights(); break;
+			case 5: event.readLinkWeights(); break;	
 			case 6: event.readTaskInititate(); break;
 			case 7: event.readTaskComplete(); break;
 			case 8: event.readPullTrafficSummary(); break;
