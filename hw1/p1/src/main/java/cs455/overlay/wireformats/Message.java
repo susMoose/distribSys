@@ -6,8 +6,11 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
+import java.util.Stack;
 import java.util.concurrent.ThreadLocalRandom; //ASK 
 
+import cs455.overlay.dijkstra.ShortestPath.Vertex;
 import cs455.overlay.wireformats.MessagingNodesList.NodeLink;
 
 public class Message {
@@ -26,9 +29,9 @@ public class Message {
 
 	// inner Message ends up being format: int ipAddress length,  byte[] ipAddress, int portNumber, long payload
 	public byte[] registerMarshaller(long pyld, String ipAddr, int portNumber) throws IOException {
-		this.payload = pyld;
 		ByteArrayOutputStream baOutputStream = new ByteArrayOutputStream();
 		DataOutputStream dout =	new DataOutputStream(new BufferedOutputStream(baOutputStream));
+		this.payload = pyld;
 		byte[] ipAddress = ipAddr.getBytes();
 		int ipAddressLength = ipAddress.length;
 
@@ -46,9 +49,9 @@ public class Message {
 
 	//Sends Status byte[] length, then the status byte[], then the info array length, then the byte [] of info
 	public byte[] registerResponseMarshaller(long pyld, String statusCode, String additionalInfo ) throws IOException {
-		this.payload = pyld;
 		ByteArrayOutputStream baOutputStream = new ByteArrayOutputStream();
 		DataOutputStream dout =	new DataOutputStream(new BufferedOutputStream(baOutputStream));
+		this.payload = pyld;
 
 		byte[] status = statusCode.getBytes();
 		int statLength = status.length;
@@ -80,17 +83,16 @@ public class Message {
 
 	// Marshall list MessagingNodesList
 	public byte[] mNodesListMarshaller(long pyld, int nNeededConnections, MessagingNodesList mnl) throws IOException {
-		this.payload = pyld;
 		ByteArrayOutputStream baOutputStream = new ByteArrayOutputStream();
 		DataOutputStream dout =	new DataOutputStream(new BufferedOutputStream(baOutputStream));
-
+		this.payload = pyld;
 		
 		ByteArrayOutputStream box=new ByteArrayOutputStream();;
 		DataOutputStream outputBox=new DataOutputStream(box);
 		byte[] listBytes = null, ip = null;
-		int i=0, p= 0;
+		int i = 0, p = 0;
 		for(NodeLink nod: mnl.getList() ) {
-			System.out.println(" msg=>" +nod.ipAddress);
+//			System.out.println(" msg=>" +nod.ipAddress);
 			ip =  nod.ipAddress.getBytes();
 			p = nod.port;
 			outputBox.writeInt(ip.length);
@@ -115,24 +117,29 @@ public class Message {
 		return marshalledBytes;
 	}
 
-	public byte[] linkWeightsMarshaller(long pyld, int nNeededConnections, MessagingNodesList mnl) throws IOException {
-		this.payload = pyld;
+	public byte[] linkWeightsMarshaller(long pyld, int nNeededConnections, MessagingNodesList mnl, int numNodes) throws IOException {
 		ByteArrayOutputStream baOutputStream = new ByteArrayOutputStream();
 		DataOutputStream dout =	new DataOutputStream(new BufferedOutputStream(baOutputStream));
-
+		this.payload = pyld;
 		
 		ByteArrayOutputStream box=new ByteArrayOutputStream();;
 		DataOutputStream outputBox=new DataOutputStream(box);
-		byte[] listBytes = null, ip = null;
-		int i=0, p= 0, weight=0;
+		byte[] listBytes = null, ip = null, originIP = null;
+		int i=0, p=0, weight=0, originP=0;
 		for(NodeLink nod: mnl.getList() ) {
-			System.out.println("  " +nod.ipAddress);
-			ip =  nod.ipAddress.getBytes();
+			ip = nod.ipAddress.getBytes();
 			p = nod.port;
-			weight=nod.getLinkWeight();
+			originIP = nod.contactIP.getBytes();
+			originP = nod.contactPort;
+			
+			weight = nod.getLinkWeight();
 			outputBox.writeInt(ip.length);
 			outputBox.write(ip);
 			outputBox.writeInt(p);
+			
+			outputBox.writeInt(originIP.length);
+			outputBox.write(originIP);
+			outputBox.writeInt(originP);
 			outputBox.writeInt(weight);
 		}
 		listBytes = box.toByteArray();
@@ -142,6 +149,7 @@ public class Message {
 		dout.writeInt(nNeededConnections);
 		dout.writeInt(listBytesLength);
 		dout.write(listBytes);
+		dout.writeInt(numNodes);
 		dout.writeLong(payload);
 		dout.flush();
 		
@@ -153,7 +161,18 @@ public class Message {
 		return marshalledBytes;
 	}
 
-	public byte[] taskInitiateMarshaller() {
+	public byte[] taskInitiateMarshaller(long pyld, int rounds) throws IOException {
+		ByteArrayOutputStream baOutputStream = new ByteArrayOutputStream();
+		DataOutputStream dout =	new DataOutputStream(new BufferedOutputStream(baOutputStream));
+		this.payload = pyld;
+
+		dout.writeInt(rounds);
+		dout.writeLong(payload);
+		dout.flush();
+
+		marshalledBytes = baOutputStream.toByteArray();
+		baOutputStream.close();
+		dout.close();
 		return marshalledBytes;
 	}
 
@@ -168,6 +187,38 @@ public class Message {
 	public byte[] trafficSummaryMarshaller() {
 		return marshalledBytes;
 	}
+	public byte[] forwardMarshaller(long pyld, ArrayList<String> nextSteps) throws IOException {
+		this.payload = pyld;
+		ByteArrayOutputStream baOutputStream = new ByteArrayOutputStream();
+		DataOutputStream dout =	new DataOutputStream(new BufferedOutputStream(baOutputStream));
+		ByteArrayOutputStream box=new ByteArrayOutputStream();
+		DataOutputStream outputBox=new DataOutputStream(box);
+
+		int routeCount = nextSteps.size();
+		byte[] routeBytes = null, nodeIP = null;
+		int ipSize = 0;
+		while(!nextSteps.isEmpty()) {
+			nodeIP = nextSteps.remove(0).getBytes();
+			ipSize = nodeIP.length;
+			outputBox.writeInt(ipSize);
+			outputBox.write(nodeIP);
+		}
+		routeBytes= box.toByteArray();
+		int listBytesLength = routeBytes.length;
+		
+		
+		dout.writeInt(routeCount);
+		dout.writeInt(listBytesLength);
+		dout.write(routeBytes);
+		dout.writeLong(payload);
+		dout.flush();
+		
+		marshalledBytes = baOutputStream.toByteArray();
+		baOutputStream.close();
+		dout.close();
+		return marshalledBytes;
+		
+	}
 
 	// Returns the integer representation of the messageType
 	public int getMessageNumber(String message) {
@@ -181,6 +232,7 @@ public class Message {
 		else if(message.contentEquals( "TASK_COMPLETE")) messageType = 7;
 		else if(message.contentEquals( "PULL_TRAFFIC_SUMMARY")) messageType = 8;
 		else if(message.contentEquals( "TRAFFIC_SUMMARY")) messageType = 9;
+		else if(message.contentEquals( "FORWARD")) messageType = 10;
 		else {System.out.println("message type does not exist.");}
 		return messageType;
 	}

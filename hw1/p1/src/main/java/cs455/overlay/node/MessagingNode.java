@@ -12,14 +12,16 @@ import cs455.overlay.wireformats.Message;
 import cs455.overlay.wireformats.RegisterMessage;
 
 
-public class MessagingNode {
+public class MessagingNode extends Node{
 	private Node mNode; 
 
 	/* Constructor */
 	public MessagingNode(String registryHost, int registryPort) throws IOException {
 		Thread listener = new Thread (new CommandInput(this)); listener.start();
-		// Creating our inner node that holds the ServerSocket
-		mNode = new Node();	
+
+		mNode = new Node();			// Creating inner node that holds the ServerSocket
+		mNode.startEventQThreads();	//starting worker threads
+		
 		System.out.println("I am "+ mNode.ipAddr + "("+ mNode.portNum+")\n");
 
 		// Creating a registration message. 
@@ -34,14 +36,23 @@ public class MessagingNode {
 		TCPSender sendingMessage = new TCPSender(senderSocket, message);
 		mNode.addToSendSum(message.getPayload()); 
 		mNode.incrementSendTracker();
+		
 	}
-
+	public int getListSize() {
+		return mNode.getCurrentMessagingNodesList().getSize();
+	}
 	/* Prints the shortest paths to all other message nodes */
-	public void printShortestPath() {}
+	public void printShortestPath() {
+		mNode.showPath();
+	}
+	
 
 	/* The messaging node leaves the overlay by sending a deregistration message and awaits 
 	 * response before terminating its process and exiting.*/
 	public void exitOverlay() {}
+	
+	
+	
 	/* Lists host name + port numbers */
 	public void listMessagingNodes() {
 
@@ -53,7 +64,7 @@ public class MessagingNode {
 	}
 
 	public void showHash() {
-		Set set = mNode.list.getMap().entrySet();
+		Set set = mNode.connectionsMap.getMap().entrySet();
 		Iterator iterator = set.iterator();
 		while(iterator.hasNext()) {
 			Map.Entry mentry = (Map.Entry)iterator.next();

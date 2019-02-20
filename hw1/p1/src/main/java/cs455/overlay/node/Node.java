@@ -2,11 +2,20 @@ package cs455.overlay.node;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Stack;
 
+import cs455.overlay.dijkstra.ShortestPath;
+import cs455.overlay.dijkstra.ShortestPath.Vertex;
 import cs455.overlay.transport.StoreConnections;
 import cs455.overlay.transport.TCPConnection;
 import cs455.overlay.transport.TCPServerThread;
+import cs455.overlay.wireformats.Event;
+import cs455.overlay.wireformats.EventQueue;
 import cs455.overlay.wireformats.MessagingNodesList;
+import cs455.overlay.wireformats.MessagingNodesList.NodeLink;
+
+
 public class Node {
 	public final String ipAddr;
 	public final int portNum;
@@ -15,8 +24,11 @@ public class Node {
 	private long sendSummation = 0, receiveSummation = 0;
 	private MessagingNodesList futureConnectionsList= new MessagingNodesList();
 	private MessagingNodesList currentConnectionsList= new MessagingNodesList();
-	public StoreConnections list = new StoreConnections();
-
+	public StoreConnections connectionsMap = new StoreConnections();
+	private MessagingNodesList linkWeightsList;
+	private EventQueue eQ ;
+	private ShortestPath shortestPathCalculations;
+	private ArrayList<Vertex> vertList;
 
 
 	// Node for registry constructor
@@ -39,10 +51,8 @@ public class Node {
 		}
 	}
 
-
 	// Node used for Messaging Node constructor
 	public Node() throws IOException {
-
 		InetAddress inetAddress = InetAddress.getLocalHost();
 		ipAddr = inetAddress.getHostName()+ ".cs.colostate.edu";
 
@@ -56,7 +66,14 @@ public class Node {
 		serverThread.start();
 	}
 	
-	
+	public void startEventQThreads() {
+		eQ = new EventQueue();
+		Thread eventQThread = new Thread (eQ);
+		eventQThread.start();
+	}
+	public void addToEventQueue(Event event) {
+		eQ.insertEvent(event);
+	}
 	
 	public void incrementSendTracker() {
 		synchronized(this) {sendTracker++;}
@@ -73,41 +90,69 @@ public class Node {
 	public void addToReceiveSum(long payload) {
 		synchronized(this) {receiveSummation += payload;}
 	} 
+	public void decreaseNeededConnects() {
+		synchronized (this) { if (nPeerMessagingNodes != 0 ) nPeerMessagingNodes--;}
+	}
 
-
-	public void showMessagingNodesList() {
-		currentConnectionsList.showLinks();
-	} 
 	
-	public MessagingNodesList getCurrentMessagingNodesList() {
-		return currentConnectionsList;
-	} 
-	public MessagingNodesList getFutureMessagingNodesList() {
-		return futureConnectionsList;
-	} 
-	
+	// The below methods are the setter methods 
 	public void setPeerNumber(int peerNumber) {
 		this.nPeerMessagingNodes = peerNumber;
-	}
-	public void getSums() {
-		System.out.println("SendSummation: "+ sendSummation +", ReceiveSummation: "+ receiveSummation + ", SendTracker: "+ sendTracker + ", RecieveTracker: "+ receiveTracker);
-//		System.out.println("RelayTracker: "+ relayTracker);
 	}
 	public void setMessagingNodesList(MessagingNodesList mnl) {
 		this.currentConnectionsList= mnl;
 	}
-	
 	public void setMessagingNodesList(MessagingNodesList mnl, int connectionsNumber) {
 		this.nPeerMessagingNodes = connectionsNumber;
 		this.futureConnectionsList = mnl;
 	}
-	
-	public int getNumberNeededConnections() {return nPeerMessagingNodes;}
-	
-	
-	public void decreaseNeededConnects() {
-		synchronized (this) {
-			nPeerMessagingNodes--;
-		}
+	public void setLinkWeightsList(MessagingNodesList weights) { 
+		this.linkWeightsList = weights;
 	}
+
+	
+	
+	// The below methods display information in the console
+	public void showMessagingNodesList() {
+		currentConnectionsList.showLinks();
+	} 
+	// Lists overlay link information in format->   node1_hostname:portNum node2_hostname:portnum link_weight \n */
+	public void showLinkWeights() {
+		System.out.println("Link Weights: ");
+		ArrayList<NodeLink> weights = linkWeightsList.getList();
+		for(NodeLink n : weights){
+			System.out.printf("%s:%d %s:%d %d\n", n.contactIP,n.contactPort,n.ipAddress,n.port,n.getLinkWeight());
+		}
+		System.out.println();
+	}
+	public void showSums() {
+		System.out.println("SendSummation: "+ sendSummation +", ReceiveSummation: "+ receiveSummation + ", SendTracker: "+ sendTracker + ", RecieveTracker: "+ receiveTracker);
+		System.out.println("RelayTracker: "+ relayTracker);
+	}		
+	public void showPath() {
+		shortestPathCalculations.showShortestPaths();
+	}
+
+	
+	
+	// Performs dijkstra calculation
+	public void calculateRoutes(int numNodes) {
+		shortestPathCalculations = new ShortestPath(linkWeightsList.getList(),this.ipAddr,this.portNum, numNodes);
+		vertList = shortestPathCalculations.getVertList();
+	}
+	//finds the distance to the targeted sink node 
+	public Stack<String> getNextNodesToReach(String vertexIP, int vertexPort) {
+		return shortestPathCalculations.getShortestPath(vertexIP, vertexPort);
+	}
+	public Vertex getRandomNode() {
+		return shortestPathCalculations.getRandomNode();
+	}
+	
+	
+	// The below methods are the getter methods
+	public MessagingNodesList getCurrentMessagingNodesList() { return currentConnectionsList; } 
+	public MessagingNodesList getFutureMessagingNodesList() { return futureConnectionsList; 	} 
+	public int getNumberNeededConnections() { return nPeerMessagingNodes; }
+	public ArrayList<Vertex> getVertList() {return vertList;}
 }
+

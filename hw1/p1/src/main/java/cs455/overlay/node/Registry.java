@@ -16,6 +16,7 @@ import cs455.overlay.wireformats.LinkWeights;
 import cs455.overlay.wireformats.ListMessage;
 import cs455.overlay.wireformats.Message;
 import cs455.overlay.wireformats.MessagingNodesList;
+import cs455.overlay.wireformats.TaskInitiate;
 
 
 
@@ -29,6 +30,7 @@ public class Registry extends Node {
 		Thread listener = new Thread (new CommandInput(this)); listener.start();
 		regPortNum = rPortNumber;
 		rNode = new Node(regPortNum);		
+		rNode.startEventQThreads();	//starting worker threads
 	}
 
 
@@ -37,7 +39,7 @@ public class Registry extends Node {
 		rNode.showMessagingNodesList();
 	}
 	public void showHash() {
-		Set set = rNode.list.getMap().entrySet();
+		Set set = rNode.connectionsMap.getMap().entrySet();
 		Iterator iterator = set.iterator();
 		while(iterator.hasNext()) {
 			Map.Entry mentry = (Map.Entry)iterator.next();
@@ -47,7 +49,10 @@ public class Registry extends Node {
 	}
 	
 	
-
+	public int getListSize() {
+		return rNode.getCurrentMessagingNodesList().getSize();
+	}
+	
 	/* Lists overlay link information in format->   node1_hostname:portNum node2_hostname:portnum link_weight \n */
 	public void listWeights() {
 		StoreWeights.printWeights();
@@ -66,15 +71,13 @@ public class Registry extends Node {
 		System.out.println("\nsending link weights");
 		for(int i= 0; i < rNode.getCurrentMessagingNodesList().getSize();i++) {
 			try {
-				MessagingNodesList links = StoreWeights.getListAtIndex(i);
-				Message message = new LinkWeights(links, links.getSize());
+				MessagingNodesList weights = StoreWeights.getWeights();
+				Message message = new LinkWeights(weights, weights.getSize(),rNode.getCurrentMessagingNodesList().getSize());
 				
-				Socket senderSocket = rNode.list.getSocketWithName(links.getOwnerIP());//new Socket(links.getOwnerIP(),links.getOwnerPort());
-				System.out.println("    " + senderSocket);
+				Socket senderSocket = rNode.connectionsMap.getSocketWithName(rNode.getCurrentMessagingNodesList().getNodeAtIndex(i).ipAddress);//new Socket(links.getOwnerIP(),links.getOwnerPort());
 				TCPSender sendingMessage = new TCPSender(senderSocket, message);
 				rNode.addToSendSum(message.getPayload());
 				rNode.incrementSendTracker();
-				
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -82,7 +85,21 @@ public class Registry extends Node {
 	}
 
 	/* Results in Nodes exchanging messages within the overlay*/
-	public void start(int numberOfRounds) {}
+	public void start(int numberOfRounds) {
+		try {
+			System.out.println("Sending start messages ");
+			
+			for(int i= 0; i < rNode.getCurrentMessagingNodesList().getSize();i++) {
+				Message message = new TaskInitiate(numberOfRounds);
+				Socket senderSocket = rNode.connectionsMap.getSocketWithName(rNode.getCurrentMessagingNodesList().getNodeAtIndex(i).ipAddress);
+				TCPSender sendingMessage = new TCPSender(senderSocket, message);
+				rNode.addToSendSum(message.getPayload());
+				rNode.incrementSendTracker();
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
 
 

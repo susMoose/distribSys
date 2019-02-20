@@ -3,10 +3,13 @@ Finished: all nodes have list of who they want to connect with
 
 Next steps: when node receives a successful registration response it should add that to its current connections list
 	
-
+Running to message forwarding trouble
 
 Qs:
-how to get hostname 
+
+
+DO I STILL INCREMENT COUNT of recieived and sent when I am replaying messages
+
 How long do you give after registration 
 when registry encounters duplicate attempted node registration, how should it produce an error 
 		- duplicate test does not work yet 

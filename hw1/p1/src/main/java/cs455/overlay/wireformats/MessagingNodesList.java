@@ -8,13 +8,13 @@ public class MessagingNodesList{
 	private ArrayList <NodeLink> messagingNodesList;
 	private String ownerNodeIP;
 	private int ownerNodePort;
-	
+
 
 	public MessagingNodesList( ) {
 		//All MessagingNodesLists are arraylists full of NodeLinks objects 
 		messagingNodesList= new ArrayList<NodeLink>();
 	}
-	
+
 	public MessagingNodesList(ArrayList<NodeLink> gotThisList) {
 		messagingNodesList = gotThisList;
 	}
@@ -33,7 +33,10 @@ public class MessagingNodesList{
 		public final int port;
 		private Socket socket;
 		private int linkWeight;
-		
+		public String contactIP;
+		public int contactPort;
+		public int nodeID;
+
 		/* Constructor */
 		public NodeLink(String ip, int portNumber, Socket sockN) {
 			ipAddress = ip; 
@@ -45,16 +48,18 @@ public class MessagingNodesList{
 			ipAddress = ip; 
 			port = portNumber;
 		}
-		
+
 		/* Constructor */
-		public NodeLink(String ip, int portNumber,int linkweight) {
+		public NodeLink(String originIP,int originPort, String ip, int portNumber,int linkweight) {
 			ipAddress = ip; 
 			port = portNumber;
+			contactIP = originIP;
+			contactPort = originPort;
 			linkWeight = linkweight;
 		}
-		
+
 		public int getLinkWeight() {return linkWeight;}
-		
+
 	}
 	/* Adds a node to future list*/
 	public void addNode(String ip, int portNumber) {
@@ -62,12 +67,12 @@ public class MessagingNodesList{
 		messagingNodesList.add(newNode);
 	}
 	/* Adds a node to future list*/
-	public void addNode(String ip, int portNumber,int linkweight) {
-		NodeLink newNode = new NodeLink(ip,portNumber,linkweight);
+	public void addNode(String originIP, int originPort,String ip, int portNumber,int linkweight) {
+		NodeLink newNode = new NodeLink(originIP, originPort, ip,portNumber,linkweight);
 		messagingNodesList.add(newNode);
 	}
-	
-	
+
+
 	/* Adds a node to linked list*/
 	public void addNode(String ip, int portNumber, Socket originSocket) {
 		NodeLink newNode = new NodeLink(ip,portNumber, originSocket);
@@ -87,7 +92,6 @@ public class MessagingNodesList{
 
 	/* Search for node with certain port and ip address */
 	public boolean searchFor(String ip, int portNumber) {
-		if (messagingNodesList.equals(null)) {System.out.println("NUULLLLLLLLLLLLLLLL");}
 		for(NodeLink mnode : messagingNodesList){
 			if ((mnode.port == portNumber) && (mnode.ipAddress == ip)){
 				return true;
@@ -95,6 +99,7 @@ public class MessagingNodesList{
 		}
 		return false;
 	}
+	
 
 	public int getSize() {
 		return messagingNodesList.size();
@@ -102,7 +107,7 @@ public class MessagingNodesList{
 	public NodeLink getNodeAtIndex(int index) {
 		return messagingNodesList.get(index);
 	}
-	
+
 	public  ArrayList<NodeLink> getList() {
 		return messagingNodesList;
 	}

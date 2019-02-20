@@ -34,7 +34,7 @@ public class TCPRecieverThread  implements Runnable {
 			} catch (IOException ioe) {
 				System.out.println(ioe.getMessage()) ;
 			}	
-			eventFactory.createEvent(messageType, data, node, socket);
+			eventFactory.insert(messageType, data, node, socket);
 		}
 	}
 

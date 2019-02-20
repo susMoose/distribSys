@@ -7,9 +7,9 @@ public class LinkWeights extends Message {
 	private long payload;
 	private byte[] messageBytes;
 	
-	public LinkWeights(MessagingNodesList mnl, int nNeededConnections) throws IOException {
+	public LinkWeights(MessagingNodesList mnl, int nNeededConnections,int numNodes) throws IOException {
 		this.messageType = getMessageNumber("Link_Weights");
 		this.payload = generateRandomPayload();	
-		this.messageBytes = linkWeightsMarshaller(payload, nNeededConnections,mnl );		
+		this.messageBytes = linkWeightsMarshaller(payload, nNeededConnections,mnl, numNodes );		
 	}
 }

@@ -16,11 +16,20 @@ public class CommandInput implements Runnable {
 	public void run() {
 		while (true) {
 			String request = scan.next();
-			if (request.contentEquals("list-messaging-nodes")||request.contentEquals("lmn")) {
+			if (request.contentEquals("go")) {
+				reg.listMessagingNodes();
+				reg.setupOverlay(2);
+				reg.listWeights();
+			}
+			
+			else if (request.contentEquals("list-messaging-nodes")||request.contentEquals("lmn")) {
 				if (reg ==null) {
 					mNode.listMessagingNodes();
+					System.out.println(" - There are "+ (mNode.getListSize()-1)+ " messaging nodes.");
+
 				}else {
 					reg.listMessagingNodes();
+					System.out.println(" - There are "+ reg.getListSize() + " messaging nodes.");
 				}
 
 			}
@@ -31,12 +40,16 @@ public class CommandInput implements Runnable {
 				int Cr = scan.nextInt();
 				reg.setupOverlay(Cr);
 			}
-			else if(request.contentEquals("send-overlay-link-weights")||request.contentEquals("sw")) {
+			else if(request.contentEquals("send-overlay-link-weights")||request.contentEquals("solw")) {
 				reg.sendOverlayLinkWeights();
 			}
 			else if(request.contentEquals("start")) {
-				int numRounds = scan.nextInt();
-				reg.start(numRounds);
+				if(scan.hasNextInt()) {
+					int numRounds = scan.nextInt();
+					reg.start(numRounds);
+				}else {
+					System.out.println("Invalid command, start requires an integer parameter");
+				}
 			}
 			else if(request.contentEquals("print-shortest-path")||request.contentEquals("psp")) {
 				mNode.printShortestPath();

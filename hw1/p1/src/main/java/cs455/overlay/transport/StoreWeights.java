@@ -1,27 +1,32 @@
 package cs455.overlay.transport;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 import cs455.overlay.wireformats.MessagingNodesList;
+import cs455.overlay.wireformats.MessagingNodesList.NodeLink;
 
 public class StoreWeights {
-	private static LinkedList <MessagingNodesList> all = new LinkedList<MessagingNodesList>(); 
-	public static void addMessageNodeList(MessagingNodesList mnl) {
-		all.add(mnl);
+	static MessagingNodesList allWeights = new MessagingNodesList();
+	
+
+	public static void addMessageNodeList(String originIP, int originPort, String friendIP, int friendPort, int linkWeight){
+		allWeights.addNode(originIP, originPort, friendIP, friendPort, linkWeight);
 	}
-	public static void printWeights() {
-		/* Lists overlay link information in format->   node1_hostname:portNum node2_hostname:portnum link_weight \n */
-		for(int i=0; i< all.size();i++) {
-			for(int j=0; j<all.get(i).getSize(); j++) {
-				System.out.print(all.get(i).getOwnerIP()+":"+all.get(i).getOwnerPort() + " ");
-				System.out.print(all.get(i).getNodeAtIndex(j).ipAddress + ":"+all.get(i).getNodeAtIndex(j).port + " ");
-				System.out.println(all.get(i).getNodeAtIndex(j).getLinkWeight());
-			}
+	
+	
+	public static  void printWeights() {
+		System.out.println("Link Weights: ");
+
+		ArrayList<NodeLink> weights = allWeights.getList();
+		for(NodeLink n : weights){
+			System.out.printf("%s:%d %s:%d %d\n", n.contactIP,n.contactPort,n.ipAddress,n.port,n.getLinkWeight());
 		}
+		System.out.println();
 	}
 
 
-	public static MessagingNodesList getListAtIndex(int i){return all.get(i);}
+	public static MessagingNodesList getWeights(){return allWeights;}
 
 
 

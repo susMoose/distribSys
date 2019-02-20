@@ -41,7 +41,6 @@ public class OverlayCreator {
 		for (int i=0; i< numberOfNodes; i++) {
 			contactList.add(new ArrayList<Integer>());
 		}
-		
 
 		
 		decideMapping();
@@ -92,7 +91,6 @@ public class OverlayCreator {
 				addFriend( mainNode, fIndex);
 			}	
 		}
-		StoreWeights.addMessageNodeList(peerListWithLinks);
 		sendOutLists(mainNode);
 	}
 
@@ -131,7 +129,6 @@ public class OverlayCreator {
 				addFriend( mainNode, fIndex);
 			}
 		}
-		StoreWeights.addMessageNodeList(peerListWithLinks);
 		sendOutLists(mainNode);
 	}
 
@@ -141,7 +138,11 @@ public class OverlayCreator {
 		peerList.addNode( friendIP, friendPort);
 		
 		int linkWeight = new Random().nextInt((10 - 1) + 1) + 1;
-		peerListWithLinks.addNode(friendIP, friendPort,linkWeight);
+		String originIP = registryMasterList.getNodeAtIndex(main).ipAddress;
+		int originPort = registryMasterList.getNodeAtIndex(main).port;
+		
+		StoreWeights.addMessageNodeList(originIP, originPort, friendIP, friendPort, linkWeight);
+		peerListWithLinks.addNode(friendIP, friendPort);
 		
 	}
 
