@@ -1,0 +1,111 @@
+Registry terminal text: 
+boston:~/distribSys/hw1/p1/build/classes/java/main$ java cs455.overlay.node.Registry  2222
+TCPConnection.java:      Registry server socket connceted at port: 2222
+TCPServerThread.java:    Now my serverSocket is waiting for a connection.
+TCPServerThread.java:    Recieved a connection; Now creating reciever thread.
+Socket closed
+TCPServerThread.java:    Recieved a connection; Now creating reciever thread.
+Socket closed
+
+|> Payload Recieved: -1296501598
+
+
+|> Payload Recieved: -320990995
+
+SendSummation: 0, ReceiveSummation: -1617492593, SendTracker: 0, RecieveTracker: 2
+SendSummation: 0, ReceiveSummation: -1296501598, SendTracker: 0, RecieveTracker: 1
+
+|> Payload Sent: 1720324578
+
+
+|> Payload Sent: -302742948
+
+TCPSender.java:         Connected to another node and just sent message.
+TCPSender.java:         Connected to another node and just sent message.
+TCPServerThread.java:    Recieved a connection; Now creating reciever thread.
+Socket closed
+
+|> Payload Recieved: 1056885360
+
+SendSummation: 1417581630, ReceiveSummation: -560607233, SendTracker: 2, RecieveTracker: 3
+Exception in thread "Thread-4" java.lang.NullPointerException
+	at cs455.overlay.wireformats.MessagingNodesList.searchFor(MessagingNodesList.java:46)
+	at cs455.overlay.wireformats.Event.readRegisterRequest(Event.java:53)
+	at cs455.overlay.wireformats.EventFactory.createEvent(EventFactory.java:19)
+	at cs455.overlay.transport.TCPRecieverThread.run(TCPRecieverThread.java:40)
+	at java.lang.Thread.run(Thread.java:748)
+TCPServerThread.java:    Recieved a connection; Now creating reciever thread.
+Socket closed
+
+|> Payload Recieved: -1143766681
+
+SendSummation: 1417581630, ReceiveSummation: -1704373914, SendTracker: 2, RecieveTracker: 4
+Exception in thread "Thread-5" java.lang.NullPointerException
+	at cs455.overlay.wireformats.MessagingNodesList.searchFor(MessagingNodesList.java:46)
+	at cs455.overlay.wireformats.Event.readRegisterRequest(Event.java:53)
+	at cs455.overlay.wireformats.EventFactory.createEvent(EventFactory.java:19)
+	at cs455.overlay.transport.TCPRecieverThread.run(TCPRecieverThread.java:40)
+	at java.lang.Thread.run(Thread.java:748)
+list-messaging-nodes 
+
+ Messaging Nodes List: 
+Exception in thread "Thread-0" java.lang.NullPointerException
+	at cs455.overlay.wireformats.MessagingNodesList.showLinks(MessagingNodesList.java:67)
+	at cs455.overlay.node.Node.showMessagingNodesList(Node.java:75)
+	at cs455.overlay.node.Registry.listMessagingNodes(Registry.java:26)
+	at cs455.overlay.wireformats.CommandInput.run(CommandInput.java:20)
+	at java.lang.Thread.run(Thread.java:748)
+list-messaging-nodes
+
+
+
+Mnode terminals: 
+1.
+	TCPConnection.java:      Message Node server socket located at port: 1025
+	TCPServerThread.java:    Now my serverSocket is waiting for a connection.
+	
+	|> Payload Sent: 1056885360
+	
+	TCPSender.java:         Connected to another node and just sent message.
+
+
+2.
+	TCPConnection.java:      Message Node server socket located at port: 1061
+	TCPServerThread.java:    Now my serverSocket is waiting for a connection.
+	
+	|> Payload Sent: -320990995
+	
+	TCPSender.java:         Connected to another node and just sent message.
+	TCPServerThread.java:    Recieved a connection; Now creating reciever thread.
+	Socket closed
+	
+	|> Payload Recieved: -302742948
+	
+	SendSummation: -320990995, ReceiveSummation: -302742948, SendTracker: 1, RecieveTracker: 1
+
+3. 
+	TCPConnection.java:      Message Node server socket located at port: 1061
+	TCPServerThread.java:    Now my serverSocket is waiting for a connection.
+	
+	|> Payload Sent: -1143766681
+	
+	TCPSender.java:         Connected to another node and just sent message.
+
+4. 
+	TCPConnection.java:      Message Node server socket located at port: 1025
+	TCPServerThread.java:    Now my serverSocket is waiting for a connection.
+	
+	|> Payload Sent: -1296501598
+	
+	TCPSender.java:         Connected to another node and just sent message.
+	TCPServerThread.java:    Recieved a connection; Now creating reciever thread.
+	Socket closed
+	
+	|> Payload Recieved: 1720324578
+	
+	SendSummation: -1296501598, ReceiveSummation: 1720324578, SendTracker: 1, RecieveTracker: 1
+
+
+
+
+

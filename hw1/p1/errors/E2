@@ -1,0 +1,53 @@
+Socket closed
+Socket closed
+|> register rqst from: albany, Payload Recieved: 1411359004
+|> register rqst from: frankf, Payload Recieved: 8422239
+Socket closed
+|> register rqst from: lincol, Payload Recieved: 386796373
+Exception in thread "Thread-5" java.lang.NullPointerException
+	at cs455.overlay.wireformats.MessagingNodesList.searchFor(MessagingNodesList.java:92)
+	at cs455.overlay.wireformats.Event.readRegisterRequest(Event.java:67)
+	at cs455.overlay.wireformats.EventFactory.createEvent(EventFactory.java:22)
+	at cs455.overlay.transport.TCPRecieverThread.run(TCPRecieverThread.java:41)
+	at java.lang.Thread.run(Thread.java:748)
+Socket closed
+|> register rqst from: carson, Payload Recieved: -793960906
+Exception in thread "Thread-6" java.lang.NullPointerException
+	at cs455.overlay.wireformats.MessagingNodesList.searchFor(MessagingNodesList.java:92)
+	at cs455.overlay.wireformats.Event.readRegisterRequest(Event.java:67)
+	at cs455.overlay.wireformats.EventFactory.createEvent(EventFactory.java:22)
+	at cs455.overlay.transport.TCPRecieverThread.run(TCPRecieverThread.java:41)
+	at java.lang.Thread.run(Thread.java:748)
+Socket closed
+|> register rqst from: raleig, Payload Recieved: -1821738453
+Exception in thread "Thread-7" java.lang.NullPointerException
+	at cs455.overlay.wireformats.MessagingNodesList.searchFor(MessagingNodesList.java:92)
+	at cs455.overlay.wireformats.Event.readRegisterRequest(Event.java:67)
+	at cs455.overlay.wireformats.EventFactory.createEvent(EventFactory.java:22)
+	at cs455.overlay.transport.TCPRecieverThread.run(TCPRecieverThread.java:41)
+	at java.lang.Thread.run(Thread.java:748)
+Socket closed
+|> register rqst from: harris, Payload Recieved: 1982167692
+Exception in thread "Thread-8" java.lang.NullPointerException
+	at cs455.overlay.wireformats.MessagingNodesList.searchFor(MessagingNodesList.java:92)
+	at cs455.overlay.wireformats.Event.readRegisterRequest(Event.java:67)
+	at cs455.overlay.wireformats.EventFactory.createEvent(EventFactory.java:22)
+	at cs455.overlay.transport.TCPRecieverThread.run(TCPRecieverThread.java:41)
+	at java.lang.Thread.run(Thread.java:748)
+Socket closed
+|> register rqst from: dover., Payload Recieved: -866408549
+Exception in thread "Thread-9" java.lang.NullPointerException
+	at cs455.overlay.wireformats.MessagingNodesList.searchFor(MessagingNodesList.java:92)
+	at cs455.overlay.wireformats.Event.readRegisterRequest(Event.java:67)
+	at cs455.overlay.wireformats.EventFactory.createEvent(EventFactory.java:22)
+	at cs455.overlay.transport.TCPRecieverThread.run(TCPRecieverThread.java:41)
+	at java.lang.Thread.run(Thread.java:748)
+Socket closed
+|> register rqst from: baton-, Payload Recieved: -601380883
+Exception in thread "Thread-10" java.lang.NullPointerException
+	at cs455.overlay.wireformats.MessagingNodesList.searchFor(MessagingNodesList.java:92)
+	at cs455.overlay.wireformats.Event.readRegisterRequest(Event.java:67)
+	at cs455.overlay.wireformats.EventFactory.createEvent(EventFactory.java:22)
+	at cs455.overlay.transport.TCPRecieverThread.run(TCPRecieverThread.java:41)
+	at java.lang.Thread.run(Thread.java:748)
+
