@@ -6,24 +6,11 @@ Next steps: when node receives a successful registration response it should add 
 Running to message forwarding trouble
 
 Qs:
+///AFTER I RECIEVE DEREGISTER RESPONSE WHAT DO I DO?
 
-
-DO I STILL INCREMENT COUNT of recieived and sent when I am replaying messages
-
-How long do you give after registration 
-when registry encounters duplicate attempted node registration, how should it produce an error 
-		- duplicate test does not work yet 
-Does who they get assigned to really have to be random?		
-The number of peer messaging nodes included in messages to different messaging nodes may vary from CR through 1? 	
 	
 -----
 // Fix Laters: 
-Event.java: ask how to check if request matches origin ip address
-MessagingNodesList.java: the searchFor method will definitely  run into concurrency errors
-Event.java: fix error throwing case line 54
-
-Handle  case where a messaging node fails just after it sends a registration request
-- deal with the case where a messaging node registers and deregisters from the registry before the overlay is set up. 
 -  printing when all connections are established 
 Fix send tracker
 

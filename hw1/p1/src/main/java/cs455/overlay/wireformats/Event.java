@@ -38,7 +38,7 @@ public class Event {
 	/** Message byte array should contain: 
 	 * 	int ipAddressLength , Byte[] ipAddress, int portNumber, long payload
 	 */
-	public void readRegisterRequest() {
+	public  void readRegisterRequest() {
 		MessagingNodesList mNodeList = node.getCurrentMessagingNodesList();
 		iStream = new ByteArrayInputStream(marshalledBytes);	
 		din = new DataInputStream(new BufferedInputStream(iStream));
@@ -52,32 +52,36 @@ public class Event {
 			int portNumber = din.readInt();
 			long payload = din.readLong();
 
-			System.out.println("|> Received register request from "+ipAddress.substring(0,7) +", Payload Recieved: " + payload);
-
+			//			System.out.println("|> Received register request from "+ipAddress.substring(0,7) +", Payload Recieved: " + payload);
 			node.addToReceiveSum(payload);
 			node.incrementReceiveTracker();
-			//node.getSums();
 
-			String additionalInfo="", statusCode="";
-			// DO NOT FORGET : Check if request matches the requests origin //ADD EXCEPTION MESSAGE
-			// If the node is already registered 
-			if(mNodeList==null) {
+			String additionalInfo="", statusCode="FAILURE";
+			if(!ipAddress.contentEquals( originSocket.getInetAddress().getHostName())) {
+				additionalInfo ="Registration request failed. The registration request has an IP which does not match the IP of the machine it came from.";
+			}
+			if(mNodeList==null) {	//handles null list issue if list has not been created yet
 				MessagingNodesList mnl = new MessagingNodesList();
 				mnl.addNode(ipAddress, portNumber,originSocket);
-				additionalInfo ="Registration request successful. The number of messaging nodes currently constituting the overlay is (" + mNodeList.getSize() +").";
+				additionalInfo ="Registration request successful. The number of messaging nodes currently constituting the overlay is (" + mnl.getSize() +").";
 				statusCode = "SUCCESS";
 				node.setMessagingNodesList(mnl);
 			}
-			else if (mNodeList.searchFor(ipAddress,portNumber)){
-				System.out.println("Registration request was unsuccessful as the node located at "+ipAddress+" ("+portNumber+") was already among the registered nodes.");
-				additionalInfo ="Registration request failed. The node being added was already registered in the registry.";
-				statusCode = "FAILURE";
+			else if (mNodeList.searchFor(ipAddress,portNumber)){		//Checks if the node was already registered
+				additionalInfo ="Registration request failed for "+ipAddress+". The node being added was already registered in the registry.";
 			}
 			else {
 				// Else add the Node 
 				mNodeList.addNode(ipAddress, portNumber,originSocket);
 				additionalInfo ="Registration request successful. The number of messaging nodes currently constituting the overlay is (" + mNodeList.getSize() +").";
 				statusCode = "SUCCESS";
+			}
+			if(statusCode.contentEquals("FAILURE")) System.out.println(additionalInfo);
+				node.decreaseNeededConnects();
+
+			
+			if(node.getNumberNeededConnections() <=0) {
+				System.out.println("All connections are established. Number of connections: "+(node.getCurrentMessagingNodesList().getSize()-1));
 			}
 			//Now sending a RegisterResponse
 			Message response = new RegisterResponse(statusCode, additionalInfo);
@@ -99,46 +103,122 @@ public class Event {
 			int statLength = din.readInt();
 			byte[] status = new byte[statLength];
 			din.readFully(status);
+			String stat = new String(status);
 			int infoLength = din.readInt();
 			byte[] info = new byte[infoLength];
 			din.readFully(info);
 			long payload = din.readLong();
 
-			String stat = new String(status);
-
 			if( stat.contentEquals("SUCCESS")) {
 				String ipAddress = originSocket.getInetAddress().getHostName();
-
+//				System.out.println("Successfully registered myself at " + ipAddress +".");
 				String tempAddr = originSocket.getRemoteSocketAddress().toString();
 				tempAddr = tempAddr.substring(tempAddr.length()-5);
 				int port = Integer.parseInt(tempAddr);
 				node.getCurrentMessagingNodesList().addNode(ipAddress, port, originSocket);
 				node.decreaseNeededConnects();
 			}
-			System.out.println("|> Received registration response: "+ stat  +", Payload Recieved: " + payload);
+			if(node.getNumberNeededConnections() <=0) {
+				System.out.println("All connections are established. Number of connections: "+(node.getCurrentMessagingNodesList().getSize()-1));
+			}
+			
 			node.addToReceiveSum(payload);
 			node.incrementReceiveTracker();
 			iStream.close(); din.close();
-			//node.getSums();
 		} catch (IOException e) {
 			System.out.println("Failed to read message. "); 
 		}
 	}
 
-	public void readDeregisterRequest() {
+	public  void readDeregisterRequest() {
 		MessagingNodesList mNodeList = node.getCurrentMessagingNodesList();
+		iStream = new ByteArrayInputStream(marshalledBytes);	
+		din = new DataInputStream(new BufferedInputStream(iStream));
+		try {
+			//Reading IP Address
+			int ipAddressLength = din.readInt();
+			byte[] ipAddrBytes = new byte[ipAddressLength];
+			din.readFully(ipAddrBytes);
+			String ipAddress = new String(ipAddrBytes);
 
+			int portNumber = din.readInt();
+			long payload = din.readLong();
+
+			node.addToReceiveSum(payload);
+			node.incrementReceiveTracker();
+			iStream.close(); din.close();
+
+//			System.out.println("|> Received DEREGISTER request from "+ipAddress.substring(0,7));
+
+			String additionalInfo="", statusCode="FAILURE";
+			// Check if request matches the requests origin 
+			if(!ipAddress.contentEquals( originSocket.getInetAddress().getHostName())) {
+				additionalInfo ="The message registration request has an IP which does not match the IP of the machine it came from.";
+			}
+			else if(mNodeList!=null) {
+				synchronized (this) {
+					if (mNodeList.searchFor(ipAddress,portNumber)) {
+						statusCode = "SUCCESS";
+						mNodeList.removeNode(ipAddress, portNumber);
+						additionalInfo = "The number of messaging nodes now constituting the overlay is (" + mNodeList.getSize() +").";
+						node.setMessagingNodesList(mNodeList);
+					}
+				}
+			}
+			if (statusCode.contentEquals("FAILURE")){
+				if(additionalInfo.length() < 2) additionalInfo ="Deregistration request was unsuccessful as the node at "+ipAddress+":" + portNumber+" is not a currently registered nodes.";
+				System.out.println("Details:" + additionalInfo);
+			}
+			//Now sending a RegisterResponse
+			Message response = new DeregisterResponse(statusCode, additionalInfo);
+			Socket senderSocket = new Socket(ipAddress, portNumber);
+			node.connectionsMap.addConnection(ipAddress, senderSocket);
+
+			TCPSender sendMessage = new TCPSender(senderSocket, response);
+			node.addToSendSum(response.getPayload()); node.incrementSendTracker();
+
+			originSocket.close();
+
+		} catch (IOException e) { System.out.println("Failed to read message. "); }
 	}
 
 	public void readDeregisterResponse() {
+		iStream = new ByteArrayInputStream(marshalledBytes);	
+		din = new DataInputStream(new BufferedInputStream(iStream));
+		try {
+			int statLength = din.readInt();
+			byte[] status = new byte[statLength];
+			din.readFully(status);
+			int infoLength = din.readInt();
+			byte[] info = new byte[infoLength];
+			din.readFully(info);
+			long payload = din.readLong();
+
+			String stat = new String(status);
+			// This means my node is able to deregsier
+//			System.out.println("|> Received Deregistration response: "+ stat );
+
+			node.addToReceiveSum(payload);
+			node.incrementReceiveTracker();
+			iStream.close(); din.close();
+			if( stat.contentEquals("SUCCESS")) {
+//				System.out.println("I am exiting");
+				originSocket.close();
+				System.exit(0);
+			}
+		} catch (IOException e) {
+			System.out.println("Failed to read message. "); 
+		}
+
 	}
 
 	//Each node stores this list of who they want to connect with in their future connections slot 
 	public void readMessagingNodesList() {
-		System.out.println("\n---Received messaging nodes list---");
+//		System.out.println("\n---Received messaging nodes list---");
 		iStream = new ByteArrayInputStream(marshalledBytes);	
 		din = new DataInputStream(new BufferedInputStream(iStream));
 		try {
+			int totalCr = din.readInt();
 			int nNeededConnections = din.readInt();
 			int listByteLength = din.readInt();
 			byte[] listBytes = new byte[listByteLength];
@@ -163,9 +243,9 @@ public class Event {
 				newList.addNode(nIP, nLPort);
 			}
 
-			node.setMessagingNodesList(newList,nNeededConnections);
-			node.getFutureMessagingNodesList().showLinks();
-			System.out.println();
+			node.setMessagingNodesList(newList,totalCr);
+//			node.getFutureMessagingNodesList().showLinks();
+//			System.out.println();
 
 			node.addToReceiveSum(payload);
 			node.incrementReceiveTracker();
@@ -197,7 +277,6 @@ public class Event {
 	}
 
 	public void readLinkWeights() {
-		System.out.println("\n---Received Link weights list---");
 		iStream = new ByteArrayInputStream(marshalledBytes);	
 		din = new DataInputStream(new BufferedInputStream(iStream));
 		try {
@@ -235,8 +314,9 @@ public class Event {
 			node.setLinkWeightsList(newList);
 			node.addToReceiveSum(payload);
 			node.incrementReceiveTracker();
-
 			node.calculateRoutes(numNodes);			// dijkstra's calculations
+			System.out.println("Link weights are received and processed. Ready to send messages");
+			
 			//node.getSums();
 		} catch (IOException e) {
 			System.out.println("Failed to read message. "); 
@@ -244,7 +324,8 @@ public class Event {
 	}
 
 	public void readTaskInititate() {
-		System.out.println("---Received Task Initiate Message---");
+//		System.out.println();
+		//		System.out.println("---Received Task Initiate Message---");
 		iStream = new ByteArrayInputStream(marshalledBytes);	
 		din = new DataInputStream(new BufferedInputStream(iStream));
 		try {
@@ -252,15 +333,15 @@ public class Event {
 			int rounds = din.readInt();
 			long payload = din.readLong();
 
-			System.out.println("rounds = "+ rounds);
+//			System.out.println("rounds = "+ rounds);
 			for(int i = 0; i < rounds; i++) {
 				///BEGin task
 				//Select random node from list of nodes to send a message to 
 				Vertex randomNode = node.getRandomNode();
 				Stack<String> nxt= node.getNextNodesToReach(randomNode.ip,randomNode.port);
 				String firstStop = nxt.pop();
-				
-				System.out.println(" ------> Sending message to "+randomNode.ip +" the first stop at : "+firstStop);
+
+//				System.out.println("START of message for ["+randomNode.ip +"], first: "+firstStop);
 				ArrayList<String> nextSteps= new ArrayList<String>(nxt);
 				Message message = new ForwardMessage(nextSteps);
 				Socket senderSocket = node.connectionsMap.getSocketWithName(firstStop);
@@ -274,6 +355,23 @@ public class Event {
 	}
 
 	public void readTaskComplete() {
+		MessagingNodesList mNodeList = node.getCurrentMessagingNodesList();
+		iStream = new ByteArrayInputStream(marshalledBytes);	
+		din = new DataInputStream(new BufferedInputStream(iStream));
+		try {
+			//Reading IP Address
+			int ipAddressLength = din.readInt();
+			byte[] ipAddrBytes = new byte[ipAddressLength];
+			din.readFully(ipAddrBytes);
+			String ipAddress = new String(ipAddrBytes);
+			int portNumber = din.readInt();
+			long payload = din.readLong();
+//			System.out.println(ipAddress +" has finished their task.");
+			node.addToReceiveSum(payload);
+			node.incrementReceiveTracker();
+		} catch (IOException e) {
+			System.out.println("Failed to read message. "); 
+		}
 	}
 
 	public void readPullTrafficSummary() {
@@ -306,28 +404,23 @@ public class Event {
 				route.add(ip);
 			}
 			if(nRouteStops == 0) {
-				System.out.println("-------------->I was a sink node!!! :)");
+//				System.out.println("-------------->I am a sink node!!! :)");
 				node.addToReceiveSum(payload);
 				node.incrementReceiveTracker();
 			}
 			else {
 				node.incrementRelayTracker();
-				System.out.print("----->I relayed a message message for "+ route.get(route.size()-1));
+//				System.out.println("["+route.get(route.size()-1)+"] ---> relaying message to "+ route.get(0));
 				String nextStop = route.remove(0);
-				System.out.println(" to " + nextStop);
 				Message message = new ForwardMessage(route);
 				if (node.connectionsMap.getSocketWithName(nextStop) == null) {
-					System.out.println("printing connections mapp ...");
-					
-						System.out.println(node.connectionsMap.getMap().keySet());
+//					System.out.println("printing connections mapp ...");
+//					System.out.println(node.connectionsMap.getMap().keySet());
 					//Socket senderSocket = new Socket(node.getCurrentMessagingNodesList().get(originIP, portNumber)))
 				}else {
 					Socket senderSocket = node.connectionsMap.getSocketWithName(nextStop);
 					TCPSender sendingMessage = new TCPSender(senderSocket, message);
 				}
-				System.out.println("nRoutStops = "+ nRouteStops);
-				System.out.println(" next stop is " + nextStop + " 111");
-//				System.out.println(" next stop is " + senderSocket + " 000");
 			}
 		} catch (IOException e) {
 			System.out.println("Failed to read message. "); 

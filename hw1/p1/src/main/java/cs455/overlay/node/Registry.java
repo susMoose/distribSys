@@ -29,7 +29,8 @@ public class Registry extends Node {
 		//Creating registry Node which creates server socket
 		Thread listener = new Thread (new CommandInput(this)); listener.start();
 		regPortNum = rPortNumber;
-		rNode = new Node(regPortNum);		
+		rNode = new Node(regPortNum);
+		rNode.setPeerNumber(Integer.MAX_VALUE);
 		rNode.startEventQThreads();	//starting worker threads
 	}
 
@@ -38,6 +39,7 @@ public class Registry extends Node {
 	public void listMessagingNodes() {
 		rNode.showMessagingNodesList();
 	}
+	
 	public void showHash() {
 		Set set = rNode.connectionsMap.getMap().entrySet();
 		Iterator iterator = set.iterator();

@@ -36,7 +36,7 @@ public class EventFactory {
 
 	public void insert(int messageType, byte[] data, Node node, Socket socket) {
 		Event event = new Event(messageType, data, node, socket);
-		System.out.println("added event to queue");
+//		System.out.println("added event to queue");
 		node.addToEventQueue(event);
 	}
 	

@@ -25,11 +25,11 @@ public class CommandInput implements Runnable {
 			else if (request.contentEquals("list-messaging-nodes")||request.contentEquals("lmn")) {
 				if (reg ==null) {
 					mNode.listMessagingNodes();
-					System.out.println(" - There are "+ (mNode.getListSize()-1)+ " messaging nodes.");
+//					System.out.println(" - There are "+ (mNode.getListSize()-1)+ " messaging nodes.");
 
 				}else {
 					reg.listMessagingNodes();
-					System.out.println(" - There are "+ reg.getListSize() + " messaging nodes.");
+//					System.out.println(" - There are "+ reg.getListSize() + " messaging nodes.");
 				}
 
 			}

@@ -58,8 +58,6 @@ public class Message {
 		byte[] info = additionalInfo.getBytes();
 		int infoLength = info.length;
 
-//		System.out.println("|> Node's registry status: " + statusCode +", Payload Sent: " + payload);
-
 		dout.writeInt(statLength); 
 		dout.write(status);
 		dout.writeInt(infoLength);
@@ -72,17 +70,16 @@ public class Message {
 		dout.close();
 		return marshalledBytes;
 	}
-
-	public byte[] deregisterMarshaller() {
-		return marshalledBytes;
+	//As the message contents are the same I just reuse the  registerMarshallers
+	public byte[] deregisterMarshaller(long pyld, String ipAddr, int portNumber) throws IOException {
+		return registerMarshaller(payload, ipAddr, portNumber);
 	}
-
-	public byte[] deregisterResponseMarshaller() {
-		return marshalledBytes;
+	public byte[] deregisterResponseMarshaller(long pyld, String statusCode, String additionalInfo ) throws IOException {
+		return registerResponseMarshaller(payload, statusCode, additionalInfo );
 	}
 
 	// Marshall list MessagingNodesList
-	public byte[] mNodesListMarshaller(long pyld, int nNeededConnections, MessagingNodesList mnl) throws IOException {
+	public byte[] mNodesListMarshaller(long pyld, int nNeededConnections, MessagingNodesList mnl, int totalCr) throws IOException {
 		ByteArrayOutputStream baOutputStream = new ByteArrayOutputStream();
 		DataOutputStream dout =	new DataOutputStream(new BufferedOutputStream(baOutputStream));
 		this.payload = pyld;
@@ -102,7 +99,7 @@ public class Message {
 		listBytes = box.toByteArray();
 		
 		int listBytesLength = listBytes.length;
-		
+		dout.writeInt(totalCr);
 		dout.writeInt(nNeededConnections);
 		dout.writeInt(listBytesLength);
 		dout.write(listBytes);
@@ -113,7 +110,6 @@ public class Message {
 		baOutputStream.close();
 		dout.close();
 		outputBox.close();
-
 		return marshalledBytes;
 	}
 
@@ -176,8 +172,8 @@ public class Message {
 		return marshalledBytes;
 	}
 
-	public byte[] TaskCompleteMarshaller() {
-		return marshalledBytes;
+	public byte[] taskCompleteMarshaller(long pyld, String ipAddr, int portNumber) throws IOException {
+		return registerMarshaller(pyld, ipAddr, portNumber);
 	}
 
 	public byte[] pullTrafficMarshaller() {

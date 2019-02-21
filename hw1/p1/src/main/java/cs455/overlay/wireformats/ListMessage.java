@@ -7,9 +7,9 @@ public class ListMessage extends Message{
 	private long payload;
 	private byte[] messageBytes;
 	
-	public ListMessage(MessagingNodesList mnl, int nNeededConnections) throws IOException {
+	public ListMessage(MessagingNodesList mnl, int nNeededConnections, int totalCr) throws IOException {
 		this.messageType = getMessageNumber("MESSAGING_NODES_LIST");
 		this.payload = generateRandomPayload();	
-		this.messageBytes = mNodesListMarshaller(payload, nNeededConnections,mnl );
+		this.messageBytes = mNodesListMarshaller(payload, nNeededConnections,mnl,totalCr );
 	}
 }

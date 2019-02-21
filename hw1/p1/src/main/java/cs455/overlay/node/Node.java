@@ -35,7 +35,6 @@ public class Node {
 	public Node(int portNumber) throws UnknownHostException{
 		portNum = portNumber;
 		InetAddress inetAddress = InetAddress.getLocalHost();
-		System.out.println(inetAddress);
 		ipAddr = inetAddress.getHostName()+ ".cs.colostate.edu";
 		try {
 			// TCPConnection allocates a serverSocket for the registry 
@@ -90,7 +89,7 @@ public class Node {
 	public void addToReceiveSum(long payload) {
 		synchronized(this) {receiveSummation += payload;}
 	} 
-	public void decreaseNeededConnects() {
+	public synchronized void decreaseNeededConnects() {
 		synchronized (this) { if (nPeerMessagingNodes != 0 ) nPeerMessagingNodes--;}
 	}
 
@@ -152,7 +151,7 @@ public class Node {
 	// The below methods are the getter methods
 	public MessagingNodesList getCurrentMessagingNodesList() { return currentConnectionsList; } 
 	public MessagingNodesList getFutureMessagingNodesList() { return futureConnectionsList; 	} 
-	public int getNumberNeededConnections() { return nPeerMessagingNodes; }
+	public synchronized int getNumberNeededConnections() { return nPeerMessagingNodes; }
 	public ArrayList<Vertex> getVertList() {return vertList;}
 }
 
