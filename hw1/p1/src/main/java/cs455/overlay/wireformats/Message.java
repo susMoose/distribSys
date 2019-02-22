@@ -161,7 +161,6 @@ public class Message {
 		ByteArrayOutputStream baOutputStream = new ByteArrayOutputStream();
 		DataOutputStream dout =	new DataOutputStream(new BufferedOutputStream(baOutputStream));
 		this.payload = pyld;
-
 		dout.writeInt(rounds);
 		dout.writeLong(payload);
 		dout.flush();
@@ -176,11 +175,42 @@ public class Message {
 		return registerMarshaller(pyld, ipAddr, portNumber);
 	}
 
-	public byte[] pullTrafficMarshaller() {
+	public byte[] pullTrafficMarshaller(long pyld) throws IOException {
+		ByteArrayOutputStream baOutputStream = new ByteArrayOutputStream();
+		DataOutputStream dout =	new DataOutputStream(new BufferedOutputStream(baOutputStream));
+		this.payload = pyld;
+		dout.writeLong(payload);
+		dout.flush();
+		marshalledBytes = baOutputStream.toByteArray();
+		baOutputStream.close();
+		dout.close();
 		return marshalledBytes;
 	}
 
-	public byte[] trafficSummaryMarshaller() {
+	public byte[] trafficSummaryMarshaller(long pyld, String ipAddr, int portNumber, int numberSent, long sentSum, int numberReceived, long reciptSum, int numberRelayed) throws IOException {
+		ByteArrayOutputStream baOutputStream = new ByteArrayOutputStream();
+		DataOutputStream dout =	new DataOutputStream(new BufferedOutputStream(baOutputStream));
+		this.payload = pyld;
+		byte[] ipAddress = ipAddr.getBytes();
+		int ipAddressLength = ipAddress.length;
+
+		dout.writeInt(ipAddressLength);
+		dout.write(ipAddress);
+		dout.writeInt(portNumber);		
+		dout.writeInt(numberSent);
+		dout.writeLong(sentSum);
+		dout.writeInt(numberReceived);
+		dout.writeLong(reciptSum);
+		dout.writeInt(numberRelayed);
+		
+		dout.writeLong(payload);
+		dout.flush();
+
+		marshalledBytes = baOutputStream.toByteArray();
+		baOutputStream.close();
+		dout.close();
+		
+		
 		return marshalledBytes;
 	}
 	public byte[] forwardMarshaller(long pyld, ArrayList<String> nextSteps) throws IOException {
@@ -194,14 +224,13 @@ public class Message {
 		byte[] routeBytes = null, nodeIP = null;
 		int ipSize = 0;
 		while(!nextSteps.isEmpty()) {
-			nodeIP = nextSteps.remove(0).getBytes();
+			nodeIP = nextSteps.remove(nextSteps.size()-1).getBytes();
 			ipSize = nodeIP.length;
 			outputBox.writeInt(ipSize);
 			outputBox.write(nodeIP);
 		}
 		routeBytes= box.toByteArray();
 		int listBytesLength = routeBytes.length;
-		
 		
 		dout.writeInt(routeCount);
 		dout.writeInt(listBytesLength);

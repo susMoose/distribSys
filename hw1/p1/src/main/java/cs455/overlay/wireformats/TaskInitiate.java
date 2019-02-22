@@ -12,4 +12,5 @@ public class TaskInitiate extends Message{
 		this.payload = generateRandomPayload();	
 		this.messageBytes = taskInitiateMarshaller(payload, rounds);		
 	}
+
 }

@@ -21,23 +21,18 @@ public class MessagingNode extends Node{
 	public MessagingNode(String registryHost, int registryPort) throws IOException {
 		Thread listener = new Thread (new CommandInput(this)); listener.start();
 		mNode = new Node();			// Creating inner node that holds the ServerSocket
-		mNode.setPeerNumber(Integer.MAX_VALUE);
-
+		mNode.setPeerNumber(0);
+		mNode.setRegistryHostName(registryHost);
 		mNode.startEventQThreads();	//starting worker threads
 
-//		System.out.println("I am "+ mNode.ipAddr + "("+ mNode.portNum+")\n");
-
 		regHost=registryHost;
-//		System.out.println("Sent registration message to " + registryHost + ".");
 		Message message = new RegisterMessage(mNode.ipAddr, mNode.portNum);
 		Socket senderSocket = new Socket(registryHost, registryPort); // Creating a socket that connects directly to the registry.
-		mNode.connectionsMap.addConnection(registryHost, senderSocket);
+		mNode.getConnections().addConnection(registryHost, senderSocket);
 		
 		// Sending message
 		TCPSender sendingMessage = new TCPSender(senderSocket, message);
-		mNode.addToSendSum(message.getPayload()); 
-		mNode.incrementSendTracker();
-
+		
 	}
 	
 	/* Returns the current number of nodes that this node has connected with */
@@ -55,7 +50,7 @@ public class MessagingNode extends Node{
 	public void exitOverlay() {
 		try {
 			Message message = new Deregister(mNode.ipAddr, mNode.portNum);
-			Socket senderSocket = mNode.connectionsMap.getSocketWithName(regHost);			// Creating a socket that connects directly to the registry.
+			Socket senderSocket = mNode.getConnections().getSocketWithName(regHost);			// Creating a socket that connects directly to the registry.
 			// Sending message
 			TCPSender sendingMessage = new TCPSender(senderSocket, message);
 			mNode.addToSendSum(message.getPayload()); 
@@ -74,7 +69,7 @@ public class MessagingNode extends Node{
 	}
 
 	public void showHash() {
-		Set set = mNode.connectionsMap.getMap().entrySet();
+		Set set = mNode.getConnections().getMap().entrySet();
 		Iterator iterator = set.iterator();
 		while(iterator.hasNext()) {
 			Map.Entry mentry = (Map.Entry)iterator.next();

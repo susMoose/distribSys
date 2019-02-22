@@ -41,7 +41,7 @@ public class Registry extends Node {
 	}
 	
 	public void showHash() {
-		Set set = rNode.connectionsMap.getMap().entrySet();
+		Set set = rNode.getConnections().getMap().entrySet();
 		Iterator iterator = set.iterator();
 		while(iterator.hasNext()) {
 			Map.Entry mentry = (Map.Entry)iterator.next();
@@ -70,13 +70,12 @@ public class Registry extends Node {
 	/*Sends a link_weights message to all register nodes in the overlay.
 	 * This command should be called once after the setupOverlay command is finished. */
 	public void sendOverlayLinkWeights() {
-		System.out.println("\nsending link weights");
 		for(int i= 0; i < rNode.getCurrentMessagingNodesList().getSize();i++) {
 			try {
 				MessagingNodesList weights = StoreWeights.getWeights();
 				Message message = new LinkWeights(weights, weights.getSize(),rNode.getCurrentMessagingNodesList().getSize());
 				
-				Socket senderSocket = rNode.connectionsMap.getSocketWithName(rNode.getCurrentMessagingNodesList().getNodeAtIndex(i).ipAddress);//new Socket(links.getOwnerIP(),links.getOwnerPort());
+				Socket senderSocket = rNode.getConnections().getSocketWithName(rNode.getCurrentMessagingNodesList().getNodeAtIndex(i).ipAddress);//new Socket(links.getOwnerIP(),links.getOwnerPort());
 				TCPSender sendingMessage = new TCPSender(senderSocket, message);
 				rNode.addToSendSum(message.getPayload());
 				rNode.incrementSendTracker();
@@ -89,11 +88,9 @@ public class Registry extends Node {
 	/* Results in Nodes exchanging messages within the overlay*/
 	public void start(int numberOfRounds) {
 		try {
-			System.out.println("Sending start messages ");
-			
 			for(int i= 0; i < rNode.getCurrentMessagingNodesList().getSize();i++) {
 				Message message = new TaskInitiate(numberOfRounds);
-				Socket senderSocket = rNode.connectionsMap.getSocketWithName(rNode.getCurrentMessagingNodesList().getNodeAtIndex(i).ipAddress);
+				Socket senderSocket = rNode.getConnections().getSocketWithName(rNode.getCurrentMessagingNodesList().getNodeAtIndex(i).ipAddress);
 				TCPSender sendingMessage = new TCPSender(senderSocket, message);
 				rNode.addToSendSum(message.getPayload());
 				rNode.incrementSendTracker();

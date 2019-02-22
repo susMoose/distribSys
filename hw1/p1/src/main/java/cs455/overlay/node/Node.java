@@ -24,12 +24,13 @@ public class Node {
 	private long sendSummation = 0, receiveSummation = 0;
 	private MessagingNodesList futureConnectionsList= new MessagingNodesList();
 	private MessagingNodesList currentConnectionsList= new MessagingNodesList();
-	public StoreConnections connectionsMap = new StoreConnections();
+	private StoreConnections connectionsMap = new StoreConnections();
 	private MessagingNodesList linkWeightsList;
 	private EventQueue eQ ;
 	private ShortestPath shortestPathCalculations;
 	private ArrayList<Vertex> vertList;
-
+	private String registryHostName;
+	private int nodesCompleted = 0;
 
 	// Node for registry constructor
 	public Node(int portNumber) throws UnknownHostException{
@@ -90,7 +91,23 @@ public class Node {
 		synchronized(this) {receiveSummation += payload;}
 	} 
 	public synchronized void decreaseNeededConnects() {
-		synchronized (this) { if (nPeerMessagingNodes != 0 ) nPeerMessagingNodes--;}
+		synchronized (this) {
+				nPeerMessagingNodes--; 
+			}
+	}
+	public void incrementNodesCompleted() {
+		synchronized(this) {nodesCompleted++;}
+	}
+	public void decrementNodesCompleted() {
+		synchronized(this) {nodesCompleted--;}
+	}
+	
+	public void resetTrafficStats() {
+		sendTracker = 0;
+		receiveTracker = 0; 
+		relayTracker = 0;
+		sendSummation = 0l;
+		receiveSummation = 0l;;
 	}
 
 	
@@ -102,11 +119,13 @@ public class Node {
 		this.currentConnectionsList= mnl;
 	}
 	public void setMessagingNodesList(MessagingNodesList mnl, int connectionsNumber) {
-		this.nPeerMessagingNodes = connectionsNumber;
 		this.futureConnectionsList = mnl;
 	}
 	public void setLinkWeightsList(MessagingNodesList weights) { 
 		this.linkWeightsList = weights;
+	}
+	public void setRegistryHostName (String reg) {
+		this.registryHostName = reg;
 	}
 
 	
@@ -151,7 +170,19 @@ public class Node {
 	// The below methods are the getter methods
 	public MessagingNodesList getCurrentMessagingNodesList() { return currentConnectionsList; } 
 	public MessagingNodesList getFutureMessagingNodesList() { return futureConnectionsList; 	} 
-	public synchronized int getNumberNeededConnections() { return nPeerMessagingNodes; }
+	public synchronized int getNumberNeededPeers() { return nPeerMessagingNodes; }
 	public ArrayList<Vertex> getVertList() {return vertList;}
+	public String getRegistryName() {return registryHostName;}
+	public int getNodesCompleted() {return nodesCompleted;}
+	public StoreConnections getConnections() {return connectionsMap;}
+	public int getSendTracker() {return sendTracker;}
+	public int getReceiveTracker() {return receiveTracker;}
+	public int getRelayTracker() {return relayTracker;}
+	public long getSendSummation() {return sendSummation;}
+	public long getReceiveSummation() {return receiveSummation;}
+	
+	
+
+	
 }
 

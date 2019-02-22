@@ -29,7 +29,6 @@ public class CommandInput implements Runnable {
 
 				}else {
 					reg.listMessagingNodes();
-//					System.out.println(" - There are "+ reg.getListSize() + " messaging nodes.");
 				}
 
 			}
