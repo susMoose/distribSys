@@ -1,5 +1,0 @@
-package cs455.overlay.transport;
-
-public class TCPConnection {
-	//recommended class in lab that takes the TCPsenderthread and the tcpreciever thread and does something with them
-}

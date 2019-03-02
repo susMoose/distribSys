@@ -1,9 +1,0 @@
-package cs455.overlay.transport;
-import java.io.*;
-//import java.net.*;
-
-public class TCPRecieverThread {
-	public static void main(String[] args) throws IOException {
-		
-	}
-}
