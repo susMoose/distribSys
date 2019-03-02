@@ -1,0 +1,34 @@
+package cs455.overlay.transport;
+import java.io.*;
+import java.net.*;
+
+public class TCPServerThread {
+	private Socket socket;
+	private DataOutputStream dout;
+	int portRangeStart = 1025; 
+	public static void main(String[] args) throws IOException {
+		
+		boolean portFound = false; 
+		while(!portFound) {
+			try {
+				//We create the socket AND try to connect to the address and port we are running the server on
+				socketToTheServer = new Socket(SERVER_ADDRESS, PORT);
+				inputStream = new DataInputStream(socketToTheServer.getInputStream());
+				outputStream = new DataOutputStream(socketToTheServer.getOutputStream());
+			} catch(IOException e) {
+				System.out.println("Client::main::creating_the_socket:: " + e);
+				System.exit(1);
+			}
+		}
+		
+		
+	}
+
+}
+
+
+// the line below is used if a machine has multiple ip addresses 
+//ServerSocket serverSocket = new ServerSocket(5000, 100, InetAddress.getHostByName(“address2.cs.colostate.edu”));
+
+
+// TCPServerSocket is used to accept incoming TCP communications. 

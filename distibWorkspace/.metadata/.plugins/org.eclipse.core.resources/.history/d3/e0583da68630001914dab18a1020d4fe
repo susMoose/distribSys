@@ -1,0 +1,45 @@
+package cs455.overlay.node;
+import java.io.IOException;
+
+import cs455.overlay.transport.TCPConnection;
+import cs455.overlay.transport.TCPServerThread;
+public class Node {
+	public String ipAddr;
+	public int portNum;
+	public int sendTracker = 0, receiveTracker = 0, relayTracker = 0;
+	public long sendSummation = 0, receiveSummation = 0;
+	
+	// Node for registry constructor
+	public Node(int portNumber){
+		try {
+			// TCPConnection allocates a serverSocket for the registry 
+			TCPConnection tcpSocket = new TCPConnection(portNumber);		
+			
+			// Creating a new thread to listen for new connections
+			Thread serverThread = new Thread (new TCPServerThread(tcpSocket.getMyServerSocket()));
+			serverThread.start();
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
+	}
+	
+	
+	// Node used for Messaging Node constructor
+	public Node() {
+		try {
+			// TCPConnection allocates a serverSocket for the messaging node 
+			TCPConnection tcpSocket = new TCPConnection(0);	
+			
+			// Creating a new thread to listen for new connections
+			Thread serverThread = new Thread (new TCPServerThread(tcpSocket.getMyServerSocket()));
+			serverThread.start();
+			
+		} catch (IOException e) {
+			System.out.println("Node.java:  Was unable to create a node that connected a port");
+			System.exit(1);
+		}
+	}
+
+}

@@ -1,0 +1,60 @@
+package cs455.overlay.transport;
+
+import java.io.*;
+import java.net.*;
+
+public class TCPConnection {
+	private ServerSocket myServerSocket;
+	private int portFinder = 1025;
+	
+	/** Constructor used by the registry node */
+	public TCPConnection(int portNumber) throws IOException {	
+		createRegistryServerSocket(portNumber);	 }
+	
+	/** Constructor used by the messaging nodes */
+	public TCPConnection() throws IOException { 	
+		getServerSocketPort(); 	}
+	
+	
+	/** Opens a the port for the registry at a given port number */
+	private void createRegistryServerSocket( int portNumber) throws IOException{			
+		try {	
+			myServerSocket = new ServerSocket(portNumber); 
+			System.out.println("Registry server socket connceted at port: "+ portNumber);
+		} catch(IOException e) {
+			System.out.println("Unable to connect to provided port, "+portNumber+" because of "+ e);
+			System.exit(1);
+		}
+	}
+	
+	
+	/** Creates a server socket and iteratively connects to the first open port. 
+	 * If no errors result then one can assume a successful connection was made.
+	 */
+	private void getServerSocketPort() throws IOException {
+		while(true) {
+			try {	
+				myServerSocket = new ServerSocket(portFinder); 
+				System.out.println("connected to new port: "+ portFinder);
+				break;	
+			} catch(IOException e) {
+				portFinder++; 
+				System.out.println("Client::main::creating_the_socket:: " + e);
+			}
+		}
+	}	
+	
+	
+	/** This is a getter method for the receiving socket of the node */
+	public ServerSocket getMySocket() {
+		return myServerSocket;
+		
+	}
+	
+	
+	public static void main(String[] args) throws IOException {
+		
+	
+	}
+	
+}

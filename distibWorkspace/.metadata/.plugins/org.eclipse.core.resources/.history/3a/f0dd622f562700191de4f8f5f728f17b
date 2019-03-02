@@ -1,0 +1,22 @@
+package cs455.overlay.wireformats;
+
+public class Deregister extends Message {
+	// This is sent right before a messaging node leaves the overlay
+	int messageType;
+	private String ipAddress;
+	private int portNumber;
+	private String registryHost;
+	private int registryPort;
+	
+	
+	public Deregister( String IP, int PN){
+		IP_ADDRESS = IP;
+		PORT_NUMBER = PN;
+		messageType = getMessageNumber("REGISTER_REQUEST");
+
+		
+	}
+	
+	
+}
+	

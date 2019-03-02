@@ -1,0 +1,12 @@
+package cs455.overlay.transport;
+import java.io.*;
+import java.net.*;
+
+public class TCPRecieverThread {
+	private Socket socket;
+	private DataInputStream din;
+	public TCPReceiver(Socket socket) throws IOException {
+		this.socket = socket;
+		din = new DataInputStream(socket.getInputStream());
+	}
+}

@@ -1,0 +1,15 @@
+package cs455.overlay.transport;
+import java.io.*;
+import java.net.*;
+
+public class TCPServerThread {
+	
+	int portRangeStart = 1025; 
+	public static void main(String[] args) throws IOException {
+		ServerSocket serverSocket = new ServerSocket(5000, 100, InetAddress.getHostByName(“address2.cs.colostate.edu”));
+	}
+
+}
+
+
+// TCPServerSocket is used to accept incoming TCP communications. 

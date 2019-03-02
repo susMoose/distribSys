@@ -1,0 +1,13 @@
+package cs455.overlay.wireformats;
+
+public class Message {
+	public int getMessageNumber(String message) {
+		switch( ) {
+		case :
+			 
+		}
+		return 0;
+		
+	}
+	
+}

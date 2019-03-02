@@ -1,0 +1,10 @@
+package cs455.overlay.wireformats;
+
+public class Message {
+	public int getMessageNumber() {
+		
+		return 0;
+		
+	}
+	
+}

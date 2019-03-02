@@ -1,0 +1,19 @@
+package cs455.overlay.transport;
+import java.io.*;
+import java.net.*;
+
+public class TCPServerThread implements Runnable {
+
+
+	public TCPServerThread() throws IOException {
+	}
+
+	public void run() {
+		
+	}
+
+	
+
+}
+
+
