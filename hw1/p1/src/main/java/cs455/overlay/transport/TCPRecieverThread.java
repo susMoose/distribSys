@@ -23,7 +23,7 @@ public class TCPRecieverThread  implements Runnable {
 	public void run() {
 		int dataLength;
 		int messageType = 0;
-		while (socket != null) {
+		while (socket != null && !socket.isClosed()) {
 			try {
 				dataLength = din.readInt();
 				messageType = din.readInt();
@@ -33,9 +33,16 @@ public class TCPRecieverThread  implements Runnable {
 				System.out.println(se.getMessage());
 			} catch (IOException ioe) {
 				System.out.println(ioe.getMessage()) ;
-			}	
-			eventFactory.insert(messageType, data, node, socket);
+			}
+			if(!socket.isClosed()) 
+				eventFactory.insert(messageType, data, node, socket);
 		}
+		try {
+			din.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
 	}
 
 }

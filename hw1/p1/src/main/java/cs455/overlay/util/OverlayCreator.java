@@ -151,7 +151,7 @@ public class OverlayCreator {
 	///send message from our RegNode to others
 	private void sendOutLists(int reciever) {
 		try {
-			Message message = new  ListMessage(peerList, peerList.getSize());
+			Message message = new  ListMessage(peerList, peerList.getSize(),Cr);
 			String rNodeIP  = registryMasterList.getNodeAtIndex(reciever).ipAddress;
 			int rPort = registryMasterList.getNodeAtIndex(reciever).port;
 			

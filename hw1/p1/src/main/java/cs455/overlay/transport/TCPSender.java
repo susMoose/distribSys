@@ -28,11 +28,6 @@ public class TCPSender {
 		outputStream.writeInt(mType);
 		outputStream.write(dataToSend, 0, dataLength);
 		outputStream.flush();
-//		System.out.println("TCPSender.java:         Sent message to: " + senderSocket.getInetAddress().getHostName()+"("+ senderSocket.getPort()+")");
 	}
-//	public static void main(String[] args) throws IOException {
-//
-//	}
-
 
 }

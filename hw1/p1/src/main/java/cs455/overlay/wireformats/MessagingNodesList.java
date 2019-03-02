@@ -9,21 +9,23 @@ public class MessagingNodesList{
 	private String ownerNodeIP;
 	private int ownerNodePort;
 
-
 	public MessagingNodesList( ) {
 		//All MessagingNodesLists are arraylists full of NodeLinks objects 
-		messagingNodesList= new ArrayList<NodeLink>();
+		setList(new ArrayList<NodeLink>());
 	}
 
 	public MessagingNodesList(ArrayList<NodeLink> gotThisList) {
-		messagingNodesList = gotThisList;
+		setList(gotThisList);
 	}
 	public MessagingNodesList( String ownerIP, int ownerPort) {
-		//All MessagingNodesLists are arraylists full of NodeLinks objects 
-		messagingNodesList= new ArrayList<NodeLink>();
+		setList(new ArrayList<NodeLink>());
 		ownerNodeIP = ownerIP;
 		ownerNodePort = ownerPort;
 	}
+	private synchronized void setList(ArrayList<NodeLink> newListValue) {
+		messagingNodesList = newListValue;
+	}
+
 	public String getOwnerIP() {return ownerNodeIP;}
 	public int getOwnerPort() {return ownerNodePort;}
 
@@ -57,49 +59,44 @@ public class MessagingNodesList{
 			contactPort = originPort;
 			linkWeight = linkweight;
 		}
-
 		public int getLinkWeight() {return linkWeight;}
-
 	}
+	
 	/* Adds a node to future list*/
-	public void addNode(String ip, int portNumber) {
+	public synchronized void addNode(String ip, int portNumber) {
 		NodeLink newNode = new NodeLink(ip,portNumber);
 		messagingNodesList.add(newNode);
 	}
 	/* Adds a node to future list*/
-	public void addNode(String originIP, int originPort,String ip, int portNumber,int linkweight) {
+	public synchronized void addNode(String originIP, int originPort,String ip, int portNumber,int linkweight) {
 		NodeLink newNode = new NodeLink(originIP, originPort, ip,portNumber,linkweight);
 		messagingNodesList.add(newNode);
 	}
 
-
 	/* Adds a node to linked list*/
-	public void addNode(String ip, int portNumber, Socket originSocket) {
+	public synchronized void addNode(String ip, int portNumber, Socket originSocket) {
 		NodeLink newNode = new NodeLink(ip,portNumber, originSocket);
 		messagingNodesList.add(newNode);
 	}
 
-	public void removeNode(String ip, int portNumber) {
+	public synchronized void removeNode(String ip, int portNumber) { 
+		NodeLink nodeBeingRemoved = null;
 		if (searchFor(ip,portNumber)) {
 			for(NodeLink mnode : messagingNodesList)
-				if ((mnode.port == portNumber) && (mnode.ipAddress == ip))
-					messagingNodesList.remove(mnode);
-		}
-		else { 
-			System.out.println("Error: node that is trying to be removed is not in registry.");
+				if ((mnode.port == portNumber) && (mnode.ipAddress.contentEquals( ip)))
+					nodeBeingRemoved = mnode;
+			
+			messagingNodesList.remove(nodeBeingRemoved);
 		}
 	}
 
 	/* Search for node with certain port and ip address */
 	public boolean searchFor(String ip, int portNumber) {
-		for(NodeLink mnode : messagingNodesList){
-			if ((mnode.port == portNumber) && (mnode.ipAddress == ip)){
+		for(NodeLink mnode : messagingNodesList)
+			if ((mnode.port == portNumber) && (mnode.ipAddress.contentEquals( ip)))
 				return true;
-			}
-		}
 		return false;
 	}
-	
 
 	public int getSize() {
 		return messagingNodesList.size();
@@ -108,14 +105,14 @@ public class MessagingNodesList{
 		return messagingNodesList.get(index);
 	}
 
-	public  ArrayList<NodeLink> getList() {
+	public ArrayList<NodeLink> getList() {
 		return messagingNodesList;
 	}
 	/* Displays registered nodes */
 	public void showLinks() {
 		System.out.println("Messaging Nodes List: ");
 		for(NodeLink o : messagingNodesList){
-			System.out.println("  "+o.ipAddress + ", "+o.port);
+			System.out.println("  "+o.ipAddress + ":"+o.port);
 		}
 		System.out.println();
 	}

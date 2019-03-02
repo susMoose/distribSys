@@ -14,7 +14,7 @@ public class TCPConnection {
 			// Enters here if it is a registry node 
 			try {	
 				serverSocket = new ServerSocket(portNumber); 
-				System.out.println("TCPConnection.java:      Registry server socket connceted at port: "+ portNumber);
+//				System.out.println("TCPConnection.java:      Registry server socket connceted at port: "+ portNumber);
 			} catch(IOException e) {
 				System.out.println("TCPConnection.java:      Unable to connect to provided port, "+portNumber+" because of "+ e);
 				System.exit(1);

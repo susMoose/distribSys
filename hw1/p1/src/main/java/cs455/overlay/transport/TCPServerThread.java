@@ -1,6 +1,8 @@
 package cs455.overlay.transport;
-import java.io.*;
-import java.net.*;
+
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
 
 import cs455.overlay.node.Node;
 
@@ -18,7 +20,6 @@ public class TCPServerThread implements Runnable {
 	}
 
 	public void run() {
-//		System.out.println("TCPServerThread.java:    Now my serverSocket is waiting for a connection.");
 		while(serverSocket !=null) {
 			try {
 				// Block on accepting connections. Once it has received a connection it will return a socket for us to use.
