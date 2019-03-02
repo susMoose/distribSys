@@ -103,8 +103,8 @@ public class Registry extends Node {
 
 
 	public static void main(String[] args) throws IOException {
-		int rPort = Integer.parseInt(args[0]);
-		Registry registry = new Registry(rPort);
+		//int rport = Integer.parseInt(args[0]);
+		Registry registry = new Registry(2232);
 	}
 }
 
