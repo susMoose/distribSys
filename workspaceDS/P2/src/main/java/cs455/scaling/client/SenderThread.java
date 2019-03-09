@@ -13,6 +13,7 @@ public class SenderThread {
 		socketChannel.configureBlocking(false);
 		socketChannel.connect(new InetSocketAddress(host_address, port_number));
 		
+		
 		//store selection key 
 //		socketChannel.register(selector, SelectionKye.OP_CONNECT);
 		

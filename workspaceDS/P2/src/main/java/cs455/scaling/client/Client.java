@@ -14,7 +14,6 @@ public class Client {
 	
 	/*Client Constructor*/
 	public Client(String serverHost, int serverPort, int messageRate) throws IOException {
-		
 		// Creating our ServerSocketChannel to receive connections on 
 		ssChannel = ServerSocketChannel.open();
 		ssChannel.accept();
@@ -26,6 +25,7 @@ public class Client {
         
         // Create buffer 
         buffer = ByteBuffer.allocate(256);
+        
         //Create message to be sent 
         
 		
