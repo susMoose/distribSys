@@ -1,0 +1,21 @@
+Got Done (maybe)
+ - TaskQueue adding and removing things from queue
+ - creating thread pool
+ - threadPool manager
+ 
+ Questions: 
+	- 	 Am i clogging task queue too much with accept connection checking for null
+	 - is it bad only reading one thing from a channel at a time (true/false attatchment)
+	
+	
+ Next Steps
+  - read messages 
+
+Later: 
+- check batch time
+- maybe make worker thread byte buff a state variable and just clear and rewind more often
+- 75a289eec0a33499fbaa6e89081c0efa604fbdd4 repeated weirdness 
+
+Potential future issues: 
+	- TaskQueue.java - currentBatchSize compound operation;
+	- TaskQueue.java - taskQ.poll line in  waitForTasks()
