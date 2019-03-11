@@ -28,8 +28,7 @@ public class SenderThread implements Runnable {
 			new Random().nextBytes(payload); 	// Generates random bytes and places them into byte array.
 			
 			String h = Hash.SHA1FromBytes(payload);
-//			System.out.println("sending msg w/ hcode of " + h);
-			hashList.add(h);	// adding hashcode to list of sent hashes
+			hashList.add(h);					// storing hash
 			
 			buffer.rewind();
 			buffer = ByteBuffer.wrap(payload);	// puts random payload into buffer
@@ -41,6 +40,8 @@ public class SenderThread implements Runnable {
 				
 			} catch (IOException e) { e.printStackTrace();
 			} catch (InterruptedException e) { e.printStackTrace();}
+			
+			ClientStatistics.incrementNumberSent();
 		}
 	}
 	

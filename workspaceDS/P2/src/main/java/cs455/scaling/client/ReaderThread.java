@@ -27,16 +27,10 @@ public class ReaderThread implements Runnable {
 			} catch (IOException e) { 
 				e.printStackTrace(); 
 			}
-			if(!hashList.contains(response)) { // Executes if the code was not one previously sent
-				if(!response.equals("75a289eec0a33499fbaa6e89081c0efa604fbdd4")){
-					System.out.println("ERROR: incorrect hashcode ");
-					try {
-						System.out.println("received: " + response);
-						Thread.sleep(10002);
-						hashList.printEveryone();
-					} catch (InterruptedException e) {e.printStackTrace();}
-				}else {System.out.println("weird repeated code ");}
-			}else {System.out.println("Approved hash response");}			
+			// Executes if the code was not one that was previously sent
+			if(!hashList.contains(response)) System.out.println("ERROR: incorrect hashcode ");
+//			else System.out.println("Approved hash response");
+			ClientStatistics.incrementNumberReceived();
 		}
 	}
 }

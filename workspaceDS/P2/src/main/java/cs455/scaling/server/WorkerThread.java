@@ -50,6 +50,7 @@ public class WorkerThread implements Runnable{
 			client.configureBlocking(false);
 			client.register(key.selector(), SelectionKey.OP_READ );
 		} catch (IOException e) {e.printStackTrace();}
+		ServerStatistics.incrementActiveConnections();
 		System.out.println("<3 Successfully accepted connection\n");
 	}
 
@@ -62,7 +63,7 @@ public class WorkerThread implements Runnable{
 			if(size != 0) {
 				byte[] bytesRead = buffer.array();
 				String messageHash = Hash.SHA1FromBytes(bytesRead);
-
+				ServerStatistics.incrementNumberProcessed();
 				//			System.out.println(" -Received a message hash of: " + messageHash); //+ new String(buffer.array()));
 				buffer.flip();			// Flip + rewind the buffer to be writable again
 				buffer = ByteBuffer.wrap(messageHash.getBytes());
