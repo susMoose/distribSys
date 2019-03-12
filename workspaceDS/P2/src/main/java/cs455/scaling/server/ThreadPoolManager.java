@@ -17,6 +17,8 @@ public class ThreadPoolManager implements Runnable{
 	public ThreadPoolManager(int port_number, int thread_pool_size, int batch_size, double batch_time) throws IOException {
 		//Creating TaskQueue
 		taskQ = new TaskQueue(batch_size, batch_time);
+		Thread taskTimer = new Thread(taskQ);	
+		taskTimer.start();
 
 		//Creating input channel
 		selector = Selector.open();	
@@ -50,10 +52,10 @@ public class ThreadPoolManager implements Runnable{
 
 			while (iter.hasNext()) {
 				SelectionKey key = (SelectionKey)iter.next();
-				if (key.isAcceptable()) {
+				if (key.isAcceptable() && key.isValid()) {
 					taskQ.addTask(key);
 				}
-				else if (key.isReadable()) {
+				else if (key.isReadable() && key.isValid()) {
 					if( key.attachment() == null) {	//if not true
 //						System.out.println("got readable key");
 						key.attach("not null");	 // Attaching signal meaning in progress

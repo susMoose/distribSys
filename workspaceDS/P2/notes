@@ -9,18 +9,18 @@ Got Done (maybe)
  
  
  Questions: 
-	- 	 Am i clogging task queue too much with accept connection checking for null
-	 - is it bad only reading one thing from a channel at a time (true/false attachment)
-	- best way to synch stats
 	
  Next Steps
   - batch time
+  - stats
+  
+  note : wait for batch time seconds 
+  -or move synch block up 
 
 Later: 
+- remove start script hardcoding of port and location
 - check batch time
-- add attachment to accepting connections
 - maybe make worker thread byte buff a state variable and just clear and rewind more often
-- 75a289eec0a33499fbaa6e89081c0efa604fbdd4 repeated weirdness 
 
 
 Potential future issues: 

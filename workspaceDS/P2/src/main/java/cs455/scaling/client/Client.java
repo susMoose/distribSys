@@ -9,6 +9,7 @@ public class Client {
 	/** Client Constructor connects to the server then spawns reader and sender threads */
 	public Client(String sHost, int sPort, int mRate) throws IOException {
 		SocketChannel channel= SocketChannel.open(new InetSocketAddress(sHost, sPort));
+		channel.finishConnect();
 		Hashcodes hashList = new Hashcodes();
 
 		Thread statsThread = new Thread(new ClientStatistics()); // Client Stats thread

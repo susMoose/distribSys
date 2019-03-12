@@ -29,10 +29,11 @@ public class SenderThread implements Runnable {
 			
 			String h = Hash.SHA1FromBytes(payload);
 			hashList.add(h);					// storing hash
-			
+//			System.out.println(" Sent hash message of "+ h);
 			buffer.rewind();
 			buffer = ByteBuffer.wrap(payload);	// puts random payload into buffer
 			try {		
+				System.out.print(".");
 				// Writing to channel 
 				channel.write(buffer);
 				// Sleeping for specified time 
@@ -43,6 +44,7 @@ public class SenderThread implements Runnable {
 			
 			ClientStatistics.incrementNumberSent();
 		}
+		System.out.println("channel is disconnected");
 	}
 	
 	

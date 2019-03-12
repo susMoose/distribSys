@@ -29,7 +29,6 @@ public class ReaderThread implements Runnable {
 			}
 			// Executes if the code was not one that was previously sent
 			if(!hashList.contains(response)) System.out.println("ERROR: incorrect hashcode ");
-//			else System.out.println("Approved hash response");
 			ClientStatistics.incrementNumberReceived();
 		}
 	}
