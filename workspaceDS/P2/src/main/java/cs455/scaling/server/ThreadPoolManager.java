@@ -51,16 +51,17 @@ public class ThreadPoolManager implements Runnable{
 			Iterator<SelectionKey> iter = selectedKeys.iterator();
 
 			while (iter.hasNext()) {
+				
 				SelectionKey key = (SelectionKey)iter.next();
 				if (key.isAcceptable() && key.isValid()) {
 					taskQ.addTask(key);
 				}
+				
 				else if (key.isReadable() && key.isValid()) {
-					if( key.attachment() == null) {	//if not true
-//						System.out.println("got readable key");
-						key.attach("not null");	 // Attaching signal meaning in progress
+//					if( key.attachment() == null) {	//if not true
+//						key.attach("not null");	 // Attaching signal meaning in progress
 						taskQ.addTask(key);
-					}
+//					}
 				}
 				iter.remove();
 			}

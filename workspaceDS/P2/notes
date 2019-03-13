@@ -5,13 +5,12 @@ Got Done (maybe)
  - sending messages from clients
  - receiving messages for both clients and server
  
+ if batch size ==0 update sleep
  
- 
- 
- Questions: 
+ Questions:  
 	
  Next Steps
-  - batch time
+  - batch time + batch size 
   - stats
   
   note : wait for batch time seconds 
@@ -21,7 +20,6 @@ Later:
 - remove start script hardcoding of port and location
 - check batch time
 - maybe make worker thread byte buff a state variable and just clear and rewind more often
-
 
 Potential future issues: 
 	- TaskQueue.java - currentBatchSize compound operation;

@@ -5,33 +5,40 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Semaphore;
 
 public class TaskQueue implements Runnable {
-	private ConcurrentLinkedQueue<TaskBatch> taskQ;	
+	private ConcurrentLinkedQueue<ConcurrentLinkedQueue<SelectionKey> > taskQ;	
 	private final int batchSize;
 	private final long batchTime;
-	private TaskBatch currentBatch; 
+	private long startTime = Integer.MAX_VALUE;
+	private ConcurrentLinkedQueue<SelectionKey>  currentBatch; 
 	private final Semaphore semaphore;
 
 	/** TaskQueue Constructor */
 	public TaskQueue(int batch_size, double batch_time) {
 		batchSize = batch_size; 
 		batchTime = (long) (batch_time*1000);	//converting to milliseconds 
-		taskQ = new ConcurrentLinkedQueue<TaskBatch>();
+		taskQ = new ConcurrentLinkedQueue<ConcurrentLinkedQueue<SelectionKey> >();
 		semaphore = new Semaphore(0); 			
-		currentBatch = new TaskBatch(); 		
+		currentBatch = new ConcurrentLinkedQueue<SelectionKey> (); 		
 	}
 
 	/** Takes a selection key which it adds to the current batch being filled */
 	public void addTask(SelectionKey key) {
-		synchronized(currentBatch) {		// Current batch is in progress and not yet in the taskQ structure 			
-			currentBatch.addUnit(key);
-			if(currentBatch.size() == batchSize) 		// If we reach batch size limit, put batch in TaskQueue
+		synchronized (currentBatch) {
+			if(currentBatch.size() == 0 ) {
+//				System.out.println("updating start time");
+				startTime = System.currentTimeMillis();
+			}
+//			System.out.println("current batch size = "+ currentBatch.size() );
+			currentBatch.add(key);
+
+			if(currentBatch.size() == batchSize) { 		// If we reach batch size limit, put batch in TaskQueue
 				addBatch();
-				//				currentBatch.notify(); 			
+			}
 		}
 	}
 
 	/** This is where threads wait to access tasks */
-	public TaskBatch waitForTasks() {
+	public ConcurrentLinkedQueue<SelectionKey>  waitForTasks() {
 		try {	
 			semaphore.acquire();  // Waits here until it can get something from queue 
 		}		
@@ -43,23 +50,26 @@ public class TaskQueue implements Runnable {
 
 	/** This thread should constantly be checking what batch is at the front of the task queue */
 	public void run() {
-		synchronized (currentBatch) {
-//			while (true) {
-//				try {
-//					currentBatch.wait(batchTime);
-					if(currentBatch.size() != 0 ) //if nonempty batch
+		while (true) {
+			try {
+//				System.out.println("sleep");
+				Thread.sleep(batchTime);
+				synchronized (currentBatch) {
+					if((startTime+1000*batchTime) <= System.currentTimeMillis() && (currentBatch.size()>0)) { 
+						System.out.println("woke");
 						addBatch();
-//				} catch (InterruptedException e) {e.printStackTrace();	}
-//			}
+					}
+				}
+			} catch (InterruptedException e) {e.printStackTrace();	}
 		}
 	}
 	private void addBatch() {
-//		synchronized(currentBatch) {
+		//		System.out.println("	Adding batch to queue");
+		if ( currentBatch.size()>0) {
 			taskQ.add(currentBatch);
 			semaphore.release(); 	//releases a permit so a workerThread access taskQ
-//			currentBatch.empty();
-			currentBatch = new TaskBatch();
-//		}
+			currentBatch = new ConcurrentLinkedQueue<SelectionKey> ();
+		}
 	}
 
 

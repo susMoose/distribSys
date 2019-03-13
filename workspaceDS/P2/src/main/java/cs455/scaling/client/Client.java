@@ -1,6 +1,7 @@
 package cs455.scaling.client;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.channels.SocketChannel;
 
@@ -8,6 +9,8 @@ public class Client {
 	
 	/** Client Constructor connects to the server then spawns reader and sender threads */
 	public Client(String sHost, int sPort, int mRate) throws IOException {
+//		InetAddress inetAddress = InetAddress.getLocalHost();
+//		System.out.println("I am " + inetAddress.getHostName());
 		SocketChannel channel= SocketChannel.open(new InetSocketAddress(sHost, sPort));
 		channel.finishConnect();
 		Hashcodes hashList = new Hashcodes();

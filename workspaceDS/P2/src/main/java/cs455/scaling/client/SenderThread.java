@@ -33,7 +33,7 @@ public class SenderThread implements Runnable {
 			buffer.rewind();
 			buffer = ByteBuffer.wrap(payload);	// puts random payload into buffer
 			try {		
-				System.out.print(".");
+//				System.out.print(".");
 				// Writing to channel 
 				channel.write(buffer);
 				// Sleeping for specified time 
