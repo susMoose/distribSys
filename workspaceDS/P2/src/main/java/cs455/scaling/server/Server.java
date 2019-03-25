@@ -15,8 +15,6 @@ public class Server {
 			managementThread.start();
 	}
 
-	
-	
 	public static void main(String[] args) throws IOException {
 		int portNum = Integer.parseInt(args[0]);
 		int threadPoolSize = Integer.parseInt(args[1]);

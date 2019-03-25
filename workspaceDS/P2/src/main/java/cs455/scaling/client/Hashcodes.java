@@ -25,16 +25,4 @@ public class Hashcodes {
 			}
 		return false;
 	}
-	public void printEveryone() {
-		for (String storedHash : hashList) {
-			System.out.println( "  "+ storedHash);
-		}
-		System.out.println("exiting in 1 seconds");
-		try {
-			Thread.sleep(1000*1);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		System.exit(2);
-	}
 }

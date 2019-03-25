@@ -33,7 +33,6 @@ public class ThreadPoolManager implements Runnable{
 
 	/** Creates a number of worker threads as specified by the parameter thread_pool_size */
 	private void createThreadPool(int thread_pool_size) {
-		System.out.println("Creating Thread Pool");
 		for(int i = 0; i < thread_pool_size; i++) {
 			Thread workingThread = new Thread(new WorkerThread(taskQ, ssChannel)); 
 			workingThread.start();		
@@ -58,10 +57,7 @@ public class ThreadPoolManager implements Runnable{
 				}
 				
 				else if (key.isReadable() && key.isValid()) {
-//					if( key.attachment() == null) {	//if not true
-//						key.attach("not null");	 // Attaching signal meaning in progress
 						taskQ.addTask(key);
-//					}
 				}
 				iter.remove();
 			}

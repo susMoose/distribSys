@@ -42,7 +42,6 @@ public class ClientStatistics implements Runnable {
 		}
 	}
 
-
 	public void run() {
 		timer.scheduleAtFixedRate(new statsPrinter(), 1000*20, 1000*20 );	// should execute TimerTask's run method every 20 seconds 
 	}

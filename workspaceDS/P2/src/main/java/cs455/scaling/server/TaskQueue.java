@@ -25,10 +25,8 @@ public class TaskQueue implements Runnable {
 	public void addTask(SelectionKey key) {
 		synchronized (currentBatch) {
 			if(currentBatch.size() == 0 ) {
-//				System.out.println("updating start time");
 				startTime = System.currentTimeMillis();
 			}
-//			System.out.println("current batch size = "+ currentBatch.size() );
 			currentBatch.add(key);
 
 			if(currentBatch.size() == batchSize) { 		// If we reach batch size limit, put batch in TaskQueue
@@ -52,7 +50,6 @@ public class TaskQueue implements Runnable {
 	public void run() {
 		while (true) {
 			try {
-//				System.out.println("sleep");
 				Thread.sleep(batchTime);
 				synchronized (currentBatch) {
 					if((startTime+1000*batchTime) <= System.currentTimeMillis() && (currentBatch.size()>0)) { 
@@ -63,15 +60,14 @@ public class TaskQueue implements Runnable {
 			} catch (InterruptedException e) {e.printStackTrace();	}
 		}
 	}
+	
+	/** Puts the batch last touched into the task queue */
 	private void addBatch() {
-		//		System.out.println("	Adding batch to queue");
 		if ( currentBatch.size()>0) {
 			taskQ.add(currentBatch);
 			semaphore.release(); 	//releases a permit so a workerThread access taskQ
 			currentBatch = new ConcurrentLinkedQueue<SelectionKey> ();
 		}
 	}
-
-
 
 }
